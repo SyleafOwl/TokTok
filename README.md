@@ -1,62 +1,16 @@
-# Toktok
+# React + Vite
 
-## Project Overview
-Toktok is a React application built with TypeScript. This project serves as a template for creating modern web applications with a focus on type safety and component-based architecture.
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-## Getting Started
+Currently, two official plugins are available:
 
-### Prerequisites
-- Node.js (version 14 or higher)
-- npm (version 5.6 or higher)
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-### Installation
-1. Clone the repository:
-   ```
-   git clone https://github.com/yourusername/Toktok.git
-   ```
-2. Navigate to the project directory:
-   ```
-   cd Toktok
-   ```
-3. Install the dependencies:
-   ```
-   npm install
-   ```
+## React Compiler
 
-### Running the Application
-To start the development server, run:
-```
-npm start
-```
-This will launch the application in your default web browser at `http://localhost:3000`.
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-### Building for Production
-To create a production build of the application, run:
-```
-npm run build
-```
-This will generate a `build` directory containing the optimized application.
+## Expanding the ESLint configuration
 
-## Project Structure
-```
-Toktok
-├── public
-│   └── index.html          # Main HTML file
-├── src
-│   ├── App.tsx            # Main application component
-│   ├── index.tsx          # Entry point of the application
-│   ├── components          # Directory for React components
-│   │   └── ExampleComponent.tsx # Example component
-│   └── types              # Directory for TypeScript types
-│       └── index.ts       # Type definitions
-├── package.json            # npm configuration file
-├── tsconfig.json           # TypeScript configuration file
-├── .gitignore              # Files to ignore in Git
-└── README.md               # Project documentation
-```
-
-## Contributing
-Contributions are welcome! Please open an issue or submit a pull request for any improvements or bug fixes.
-
-## License
-This project is licensed under the MIT License. See the LICENSE file for details.
+If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
