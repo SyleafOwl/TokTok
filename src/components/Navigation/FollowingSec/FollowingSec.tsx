@@ -1,4 +1,5 @@
 import './FollowingSec.css'
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 const FollowingSec = () => {
     return (
         <div className="contenedor-following">
@@ -7,7 +8,7 @@ const FollowingSec = () => {
                 <li>
                     <button>
                         <div className="button-content">
-                            <a href="#"><img src="" alt="" /></a>
+                            <a href="#"><img src="" alt="" /><AccountCircleIcon/></a>
                             <div className="button-structure">
                                 <div className="button-title">
                                     <p>ac1</p>
@@ -21,7 +22,7 @@ const FollowingSec = () => {
                 <li>
                     <button>
                         <div className="button-content">
-                            <a href="#"><img src="" alt="" /></a>
+                            <a href="#"><img src="" alt="" /><AccountCircleIcon/></a>
                             <div className="button-structure">
                                 <div className="button-title">
                                     <p>ac1</p>
@@ -35,7 +36,7 @@ const FollowingSec = () => {
                 <li>
                     <button>
                         <div className="button-content">
-                            <a href="#"><img src="" alt="" /></a>
+                            <a href="#"><img src="" alt="" /><AccountCircleIcon/></a>
                             <div className="button-structure">
                                 <div className="button-title">
                                     <p>ac1</p>
@@ -49,7 +50,7 @@ const FollowingSec = () => {
                 <li>
                     <button>
                         <div className="button-content">
-                            <a href="#"><img src="" alt="" /></a>
+                            <a href="#"><img src="" alt="" /><AccountCircleIcon/></a>
                             <div className="button-structure">
                                 <div className="button-title">
                                     <p>ac1</p>
@@ -63,7 +64,7 @@ const FollowingSec = () => {
                 <li>
                     <button>
                         <div className="button-content">
-                            <a href="#"><img src="" alt="" /></a>
+                            <a href="#"><img src="" alt="" /><AccountCircleIcon/></a>
                             <div className="button-structure">
                                 <div className="button-title">
                                     <p>ac1</p>
@@ -77,7 +78,7 @@ const FollowingSec = () => {
                 <li>
                     <button>
                         <div className="button-content">
-                            <a href="#"><img src="" alt="" /></a>
+                            <a href="#"><img src="" alt="" /><AccountCircleIcon/></a>
                             <div className="button-structure">
                                 <div className="button-title">
                                     <p>ac1</p>
