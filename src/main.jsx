@@ -1,17 +1,13 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import './index.css'
-import Home from './Home.tsx'
-import NavBar from './Navigation/NavBar.tsx'
+import './main.css'
+import App from './App'
 
 // Activar modo oscuro por defecto
 document.body.classList.add('theme-dark')
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <div style={{ display: 'flex', height: '100vh', width: '100vw' }}>
-      <NavBar/>
-      <Home />
-    </div>
+    <App />
   </StrictMode>,
 )

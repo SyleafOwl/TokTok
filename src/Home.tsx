@@ -1,7 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import './Home.css';
+import ComentariosPanel from './Comentarios/ComentariosPanel';
 
-
+// Hola, todos estos comentarios si estan hecho con IA para explicar el codigo
+// y ayudar a entender la logica detras de cada parte.
+// Por siaca si algo no se entiende XD
 // ========================= REGALOS =========================
 // Estructura de un regalo y lista por defecto.
 // - emoji: lo que se muestra
@@ -25,9 +28,9 @@ const getMoreVideos = (startId: number, count = 2) => {
 		description: `Video extra #${startId + i}`,
 		song: `Canción #${startId + i}`,
 		likes: `${Math.floor(Math.random() * 100)}K`,
-		comments: `${Math.floor(Math.random() * 10)}K`,
-		shares: `${Math.floor(Math.random() * 1000)}`,
-		avatar: String.fromCharCode(65 + ((startId + i) % 26)),
+		comentarios: `${Math.floor(Math.random() * 10)}K`,
+		compartir: `${Math.floor(Math.random() * 1000)}`,
+		perfil: String.fromCharCode(65 + ((startId + i) % 26)),
 	}));
 };
 
@@ -39,6 +42,8 @@ const TokTokHome: React.FC = () => {
 	const videoContainerRef = useRef<HTMLDivElement>(null);
 	// ID del video cuyo panel de regalos está abierto (o null si ninguno)
 	const [openGiftFor, setOpenGiftFor] = useState<number | null>(null);
+	// ID del video cuyo panel de comentarios está abierto (o null si ninguno)
+	const [openCommentsFor, setOpenCommentsFor] = useState<number | null>(null);
 	// Ya no es necesario cargar los primeros videos en useEffect
 
 	useEffect(() => {
@@ -49,6 +54,10 @@ const TokTokHome: React.FC = () => {
 			// Cerrar el panel de regalos al scrollear
 			if (openGiftFor !== null) {
 				setOpenGiftFor(null);
+			}
+			// Cerrar el panel de comentarios al scrollear
+			if (openCommentsFor !== null) {
+				setOpenCommentsFor(null);
 			}
 
 			// Detecta si el usuario está cerca del final
@@ -73,17 +82,38 @@ const TokTokHome: React.FC = () => {
 				container.removeEventListener('scroll', handleScroll);
 			}
 		};
-	}, [loading, openGiftFor]);
+	}, [loading, openGiftFor, openCommentsFor]);
+
+	// Cerrar comentarios con tecla ESC
+	useEffect(() => {
+		const onKey = (e: KeyboardEvent) => {
+			if (e.key === 'Escape') {
+				setOpenCommentsFor(null);
+				setOpenGiftFor(null);
+			}
+		};
+		window.addEventListener('keydown', onKey);
+		return () => window.removeEventListener('keydown', onKey);
+	}, []);
 
 	// Abre/cierra el panel de regalos para un video específico
 	const toggleGiftPanel = (videoId: number) => {
 		setOpenGiftFor((curr) => (curr === videoId ? null : videoId));
+		// si se abre regalos, cerramos comentarios
+		setOpenCommentsFor(null);
 	};
 
 	// Maneja el envío de un regalo (por ahora solo muestra un mensaje).
 	// Aquí en el futuro se integrará la lógica de monedas / pagos / animaciones.
 	const handleSendGift = (videoId: number, gift: Gift) => {
 		alert(`Enviado ${gift.emoji} ${gift.name} (coste: ${gift.cost} monedas) al video #${videoId}`);
+		setOpenGiftFor(null);
+	};
+
+	// Abre/cierra el panel de comentarios para un video específico
+	const toggleComments = (videoId: number) => {
+		setOpenCommentsFor((curr) => (curr === videoId ? null : videoId));
+		// si se abre comentarios, cerramos regalos
 		setOpenGiftFor(null);
 	};
 
@@ -123,7 +153,7 @@ const TokTokHome: React.FC = () => {
 							<div className="actions-wrapper">
 							<div className="action-bar">
 								<div className="action-item">
-									<div className="avatar">{video.avatar}</div>
+									<div className="perfil">{video.perfil}</div>
 									<span className="follow-btn">+</span>
 								</div>
 								<div className="action-item">
@@ -131,12 +161,12 @@ const TokTokHome: React.FC = () => {
 									<span className="count">{video.likes}</span>
 								</div>
 								<div className="action-item">
-									<div className="icon">💬</div>
-									<span className="count">{video.comments}</span>
+									<div className="icon" onClick={() => toggleComments(video.id)}>💬</div>
+									<span className="count">{video.comentarios}</span>
 								</div>
 								<div className="action-item">
 									<div className="icon">🔄</div>
-									<span className="count">{video.shares}</span>
+									<span className="count">{video.compartir}</span>
 								</div>
 								{/* Botón de regalos: abre/cierra el panel */}
 								<div className="action-item" onClick={() => toggleGiftPanel(video.id)}>
@@ -179,6 +209,13 @@ const TokTokHome: React.FC = () => {
 				</div>
 
 				   {/* ...eliminado nav inferior... */}
+				{/* Panel fijo de comentarios (pegado a la derecha de la pantalla) */}
+				{openCommentsFor !== null && (
+					<ComentariosPanel
+						videoId={openCommentsFor}
+						onClose={() => setOpenCommentsFor(null)}
+					/>
+				)}
 			</div>
 		</div>
 	);

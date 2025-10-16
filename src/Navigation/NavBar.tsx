@@ -7,11 +7,15 @@ import LiveTvIcon from '@mui/icons-material/LiveTv';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-const NavBar = () => {
+type NavBarProps = {
+    onNavigate?: (to: 'home' | 'settings') => void
+}
+
+const NavBar: React.FC<NavBarProps> = ({ onNavigate }) => {
     return (
         <div className="contenedor-navbar">
             <div className="sidebar-nav"> {/* Cambiado de nav-bar a sidebar-nav */}
-                <div className="nav-link">
+                <div className="nav-link" onClick={() => onNavigate && onNavigate('home')}>
                     <div className="nav-icon">
                         <HomeIcon/>    
                     </div>
@@ -47,7 +51,7 @@ const NavBar = () => {
                     </div>
                     <p>Perfil</p>
                 </div>
-                <div className="nav-link">
+                <div className="nav-link" onClick={() => onNavigate && onNavigate('settings')}>
                     <div className="nav-icon">
                         <MoreHorizIcon/>
                     </div>

@@ -38,6 +38,18 @@
   --gift-grid-columns: 3;
   --gift-item-padding: 10px;
   --gift-emoji-size: 28px;
+
+  /* ==================== PANEL DE COMENTARIOS ====================
+     Panel fijo pegado al borde derecho de la pantalla. Ajusta tamaño y espaciados desde aquí.
+     - --comments-panel-width: ancho del panel
+     - --comments-panel-gap: separación interna vertical entre items
+     - --comments-panel-z: z-index para superponer sobre el feed
+     - --comments-header-h: alto de la cabecera
+  ============================================================ */
+  --comments-panel-width: 380px;
+  --comments-panel-gap: 12px;
+  --comments-panel-z: 80;
+  --comments-header-h: 56px;
 }
 
 .main-content {
@@ -257,7 +269,7 @@
   transform: scale(1.1);
 }
 
-.avatar {
+.perfil {
   width: 50px;
   height: 50px;
   border-radius: 50%;
@@ -326,3 +338,4 @@
 .bottom-nav-item:active {
   color: #fff;
 }
+/* Estilos de comentarios movidos a src/Comentarios/ComentariosPanel.css */
