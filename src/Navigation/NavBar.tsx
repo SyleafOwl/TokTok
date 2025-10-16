@@ -8,7 +8,7 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 type NavBarProps = {
-    onNavigate?: (to: 'home' | 'settings') => void
+    onNavigate?: (to: 'home' | 'settings' | 'perfil') => void
 }
 
 const NavBar: React.FC<NavBarProps> = ({ onNavigate }) => {
@@ -45,7 +45,7 @@ const NavBar: React.FC<NavBarProps> = ({ onNavigate }) => {
                     </div>
                     <p>Cargar</p>
                 </div>
-                <div className="nav-link">
+                <div className="nav-link" onClick={() => onNavigate && onNavigate('perfil')}>
                     <div className="nav-icon">
                         <AccountCircleIcon/>
                     </div>

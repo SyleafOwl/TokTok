@@ -13,9 +13,9 @@ const VideosPerfil =({ videos }:Props)=>{
         <div className="row g-2">
             {videos.map((video)=> (
                 <div key={video.id} className="col-3">
-                    <div className="video-card">
+                    <div className="perfil-video-card">
                         <img src={video.thumbnailUrl} alt={'Video ${video.id}'}/>
-                        <div className="view-overlay">
+                        <div className="perfil-view-overlay">
                             <i className="bi bi-play-fill"></i>
                             <span>{video.views}</span>
                         </div>

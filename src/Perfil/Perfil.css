@@ -47,7 +47,7 @@
     box-shadow: none !important;   
 }
 
-.video-card{
+.perfil-video-card{
     width: 95%;
     padding-top: 120%;
     position: relative;
@@ -56,7 +56,7 @@
     overflow: hidden;
 }
 
-.video-card img{
+.perfil-video-card img{
     position: absolute;
     top:0;
     left:0;
@@ -68,11 +68,11 @@
     transition: transform 0.2s ease;
 }
 
-.video-card img:hover{
+.perfil-video-card img:hover{
     transform: scale(1.03);
 }
 
-.view-overlay{
+.perfil-view-overlay{
     position: absolute;
     bottom:0;
     left:0;
@@ -90,7 +90,7 @@
     background: linear-gradient(to top, rgba(0,0,0,0.6), transparent);
 }
 
-.view-overlay i{
+.perfil-view-overlay i{
     font-size: 1.2rem;
     margin-right: 4px;
 }
