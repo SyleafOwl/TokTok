@@ -9,12 +9,19 @@ interface NosotrosProps {
   onBack: () => void;
 }
 
+const fotoJericko = new URL("../assets/imagenes/Jericko.png", import.meta.url).href;
+const fotoDavid = new URL("../assets/imagenes/David.png", import.meta.url).href;
+const fotoLan = new URL("../assets/imagenes/Lan.png", import.meta.url).href;
+const fotoChapman = new URL("../assets/imagenes/Chapman.png", import.meta.url).href;
+const fotoKeitel = new URL("../assets/imagenes/Keitel.png", import.meta.url).href;
+  
+
 const teamMembers = [
-  { nombre: 'Jericko Espejo ', fotoUrl: 'https://via.placeholder.com/150/771796/FFFFFF?Text=Jericko' }, 
-  { nombre: 'David Rengifo 2', fotoUrl: 'https://via.placeholder.com/150/c70039/FFFFFF?Text=Miembro+2' }, 
-  { nombre: 'Ian Cavero', fotoUrl: 'https://via.placeholder.com/150/FFC300/000000?Text=Miembro+3' }, 
-  { nombre: 'Sebastian Chapman', fotoUrl: 'https://via.placeholder.com/150/17a2b8/FFFFFF?Text=Miembro+4' }, 
-  { nombre: 'Manu', fotoUrl: 'https://via.placeholder.com/150/28a745/FFFFFF?Text=Miembro+5' }
+  { nombre: 'Jericko Espejo ', fotoUrl: fotoJericko }, 
+  { nombre: 'David Rengifo 2', fotoUrl: fotoDavid}, 
+  { nombre: 'Ian Cavero', fotoUrl: fotoLan }, 
+  { nombre: 'Sebastian Chapman', fotoUrl: fotoChapman }, 
+  { nombre: 'Keitel Hernández', fotoUrl: fotoKeitel }
 ];
 
 
