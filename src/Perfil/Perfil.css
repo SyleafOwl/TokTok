@@ -1,0 +1,96 @@
+.foto-perfil{
+    width: 200px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 50%;
+    border:4px solid #000;
+    display: block;
+}
+
+.foto-container{
+    padding:4px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.foto-container.creador{
+    background: linear-gradient(45deg, #0052D4, #4364F7, #6FB1FC);
+}
+
+.nav-tabs .nav-link {
+    color: #888; 
+    border: none; 
+    border-bottom: 2px solid transparent; 
+    padding-bottom: 0.75rem;
+    font-weight: 500;
+}
+
+.nav-tabs .nav-link.active {
+    color: #fff !important; 
+    background-color: transparent !important; 
+    border-color: #fff !important; 
+}
+
+.nav-tabs .nav-link:hover{
+    color: rgb(231, 57, 80) !important;
+    border-color: transparent !important;
+}
+
+.nav-tabs {
+    border-bottom: 1px solid #333 !important; 
+    margin-bottom: 1.5rem !important;
+}
+.nav-tabs .nav-link:focus,
+.nav-tabs .nav-link:active {
+    color: rgb(231, 57, 80)  !important;  
+    border-color: transparent !important; 
+    box-shadow: none !important;   
+}
+
+.video-card{
+    width: 95%;
+    padding-top: 120%;
+    position: relative;
+    background-color: #222;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.video-card img{
+    position: absolute;
+    top:0;
+    left:0;
+    width: 100%;
+    height: 100% !important;
+    object-fit: cover;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.video-card img:hover{
+    transform: scale(1.03);
+}
+
+.view-overlay{
+    position: absolute;
+    bottom:0;
+    left:0;
+    width: 100%;
+    padding: 9px;
+
+    color:white;
+    font-weight: bold;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+
+    display: flex;
+    align-items: center;
+    font-size: 0.9rem;
+
+    background: linear-gradient(to top, rgba(0,0,0,0.6), transparent);
+}
+
+.view-overlay i{
+    font-size: 1.2rem;
+    margin-right: 4px;
+}
