@@ -1,0 +1,7 @@
+.App {
+    display: flex;
+}
+
+.contenedor-left-side {
+    flex: 0.15;
+}

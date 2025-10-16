@@ -1,0 +1,67 @@
+.contenedor-following {
+    padding: 0.5rem;
+}
+
+.following-titulo {
+    font-size: small;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    color: gray
+}
+
+.following-accountlist {
+    list-style: none;
+    padding-left: 0;
+}
+
+li {
+    padding: 0.2rem;
+}
+
+button {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    color: inherit;
+    padding: 0;
+    margin: 0;
+    height: 2.2rem;
+    cursor: pointer;
+    width: 100%;
+}
+
+.button-content {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    &:hover {
+        background-color: #ededed
+    }
+}
+
+.button-content > a:first-child {
+    margin-right: 0.5rem;
+    display: flex;
+    align-items: center;
+}
+
+.button-structure {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    align-items: flex-start;
+}
+
+.button-title {
+    margin-bottom: 0.1rem;
+}
+
+.button-title p {
+    margin: 0;
+    font-weight: 700;
+}
+
+.button-structure > p {
+    margin: 0;
+}
