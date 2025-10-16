@@ -11,7 +11,7 @@ const Settings: React.FC<SettingsProps> = ({ onBack }) => {
     <div className="settings-container">
       <header className="settings-header">
         <button onClick={onBack} className="back-button">&larr; Volver</button>
-        <h1>Settings y privacidad</h1>
+        <h1>Informacion y privacidad</h1>
       </header>
       <div className="settings-content">
         <div className="settings-section">
