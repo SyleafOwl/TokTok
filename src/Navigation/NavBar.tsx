@@ -10,7 +10,7 @@ import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 const NavBar = () => {
     return (
         <div className="contenedor-navbar">
-            <div className="nav-bar">
+            <div className="sidebar-nav"> {/* Cambiado de nav-bar a sidebar-nav */}
                 <div className="nav-link">
                     <div className="nav-icon">
                         <HomeIcon/>    
@@ -56,6 +56,8 @@ const NavBar = () => {
             </div>
             <FollowingSec/>
         </div>
+        
+        
     )
 }
 

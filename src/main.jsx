@@ -2,9 +2,13 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import Home from './Home.tsx'
+import NavBar from './Navigation/NavBar.tsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <Home />
+    <div style={{ display: 'flex', height: '100vh', width: '100vw' }}>
+      <NavBar/>
+      <Home />
+    </div>
   </StrictMode>,
 )

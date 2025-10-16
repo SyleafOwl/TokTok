@@ -24,10 +24,14 @@ a:hover {
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
+  /* El body no debe centrar todo el app: permite que los hijos usen 100vh y scroll */
+  display: block;
   min-width: 320px;
   min-height: 100vh;
+}
+
+html, body, #root {
+  height: 100%;
 }
 
 h1 {
