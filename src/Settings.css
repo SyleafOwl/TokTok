@@ -1,0 +1,78 @@
+/* src/Settings.css */
+
+.settings-container {
+  width: 100vw;
+  min-height: 100vh;
+  background-color: #121212; /* Un fondo oscuro diferente */
+  color: #fff;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.settings-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 30px;
+  border-bottom: 1px solid #2f2f2f;
+  padding-bottom: 15px;
+}
+
+.back-button {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 24px;
+  cursor: pointer;
+  margin-right: 15px;
+}
+
+.settings-header h1 {
+  font-size: 20px;
+  margin: 0;
+}
+
+.settings-section {
+  margin-bottom: 30px;
+}
+
+.settings-section h2 {
+  font-size: 16px;
+  color: #a0a0a0;
+  margin-bottom: 5px;
+}
+
+.settings-section p {
+  font-size: 14px;
+  color: #888;
+  margin-bottom: 15px;
+}
+
+.theme-options {
+  display: flex;
+  gap: 15px;
+}
+
+.theme-option {
+  padding: 10px 20px;
+  border: 1px solid #444;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.theme-option.active {
+  background-color: #fe2c55; /* Color de TikTok */
+  border-color: #fe2c55;
+}
+
+.settings-item {
+  background-color: #1e1e1e;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 16px;
+  cursor: pointer;
+}
