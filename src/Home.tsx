@@ -4,6 +4,7 @@ import './Home.css';
 
 interface HomeProps {
   onNavigateToSettings: () => void;
+  onNavigateToNosotros: () => void;
 }
 
 const initialVideos = [
@@ -24,7 +25,7 @@ const getMoreVideos = (startId: number, count = 2) => {
     }));
 };
 
-const TokTokHome: React.FC<HomeProps> = ({ onNavigateToSettings }) => {
+const TokTokHome: React.FC<HomeProps> = ({ onNavigateToSettings, onNavigateToNosotros }) => {
     const [videos, setVideos] = useState(initialVideos);
     const [loading, setLoading] = useState(false);
     const videoContainerRef = useRef<HTMLDivElement>(null);
@@ -58,6 +59,7 @@ const TokTokHome: React.FC<HomeProps> = ({ onNavigateToSettings }) => {
         <div className="tiktok-container">
             <div className="main-content">
                 <nav className="nav-bar">
+                    <div className="nav-item" onClick={onNavigateToNosotros} style={{cursor: 'pointer'}}>Nosotros</div>
                     <div className="nav-item following">Siguiendo</div>
                     <div className="nav-item for-you active">Para ti</div>
                 </nav>
