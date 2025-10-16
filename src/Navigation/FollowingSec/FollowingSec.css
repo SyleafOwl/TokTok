@@ -3,7 +3,7 @@
     background: transparent;
     border-radius: 8px;
     margin-top: auto; /* empuja esta sección al fondo */
-    color: inherit;
+    color: var(--text-primary);
     width: 100%;
 }
 
@@ -41,7 +41,7 @@ button {
     align-items: center;
     justify-content: flex-start;
     &:hover {
-        background-color: #494242
+        background-color: var(--hover-bg)
     }
 }
 

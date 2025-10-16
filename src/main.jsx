@@ -4,6 +4,9 @@ import './index.css'
 import Home from './Home.tsx'
 import NavBar from './Navigation/NavBar.tsx'
 
+// Activar modo oscuro por defecto
+document.body.classList.add('theme-dark')
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <div style={{ display: 'flex', height: '100vh', width: '100vw' }}>

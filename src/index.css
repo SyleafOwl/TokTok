@@ -3,14 +3,36 @@
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  /* THEME TOKENS (defaults = light) */
+  --app-bg: #ffffff;                 /* fondo general */
+  --text-primary: #213547;           /* texto principal */
+  --text-secondary: #4b5563;         /* texto secundario */
+  --sidebar-bg: #f7f7f7;             /* fondo del sidebar */
+  --card-bg: #000000;                /* fondo del video/card */
+  --icon-circle-bg: #222222;         /* fondo de los botones redondos */
+  --hover-bg: #efefef;               /* fondo hover en listas/botones */
+  --accent: #1de9b6;                 /* color acento (links/hover) */
+  --on-card-text: #ffffff;           /* texto sobre el video/card */
+  --on-card-secondary: #e0e0e0;      /* texto secundario sobre el card */
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Tema oscuro: sobreescribe tokens */
+.theme-dark {
+  --app-bg: #0f0f0f;
+  --text-primary: #e5e7eb;
+  --text-secondary: #cbd5e1;
+  --sidebar-bg: #111111;
+  --card-bg: #1a1a1a;
+  --icon-circle-bg: #222222;
+  --hover-bg: #222222;
+  --accent: #1de9b6;
+  --on-card-text: #ffffff;
+  --on-card-secondary: #d1d5db;
 }
 
 a {
@@ -28,6 +50,8 @@ body {
   display: block;
   min-width: 320px;
   min-height: 100vh;
+  background: var(--app-bg);
+  color: var(--text-primary);
 }
 
 html, body, #root {
@@ -58,15 +82,4 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
-}
+/* Mantener estilos responsivos; tema ahora lo controlan las variables */
