@@ -1,28 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import './Home.css';
 
-const initialVideos = [
-	{
-		id: 1,
-		user: '@usuario1',
-		description: 'Video increíble 🚀',
-		song: 'Sonido original - usuario1',
-		likes: '150K',
-		comments: '1.5K',
-		shares: '500',
-		avatar: 'A',
-	},
-	{
-		id: 2,
-		user: '@creador2',
-		description: 'Día perfecto en la playa 🌊',
-		song: 'Trending Sound - Ocean Waves',
-		likes: '89K',
-		comments: '2.1K',
-		shares: '320',
-		avatar: 'B',
-	},
-];
 
 const getMoreVideos = (startId: number, count = 2) => {
 	// Simula traer más videos
@@ -38,10 +16,13 @@ const getMoreVideos = (startId: number, count = 2) => {
 	}));
 };
 
+const initialVideos: any[] = getMoreVideos(1, 2);
+
 const TokTokHome: React.FC = () => {
 	const [videos, setVideos] = useState(initialVideos);
 	const [loading, setLoading] = useState(false);
 	const videoContainerRef = useRef<HTMLDivElement>(null);
+	// Ya no es necesario cargar los primeros videos en useEffect
 
 	useEffect(() => {
 		const handleScroll = () => {
@@ -75,11 +56,7 @@ const TokTokHome: React.FC = () => {
 	return (
 		<div className="tiktok-container">
 			<div className="main-content">
-				{/* Barra de navegación superior */}
-				<nav className="nav-bar">
-					<div className="nav-item following">Siguiendo</div>
-					<div className="nav-item for-you active">Para ti</div>
-				</nav>
+				   {/* ...eliminado nav superior... */}
 
 				{/* Contenedor de videos */}
 				<div className="video-container" ref={videoContainerRef}>
@@ -106,27 +83,27 @@ const TokTokHome: React.FC = () => {
 							</div>
 
 							{/* Barra lateral de acciones */}
-							<div className="action-bar">
-								<div className="action-item">
-									<div className="avatar">{video.avatar}</div>
-									<span className="follow-btn">+</span>
-								</div>
-								<div className="action-item">
-									❤️
-									<span className="count">{video.likes}</span>
-								</div>
-								<div className="action-item">
-									💬
-									<span className="count">{video.comments}</span>
-								</div>
-								<div className="action-item">
-									🔄
-									<span className="count">{video.shares}</span>
-								</div>
-								<div className="action-item">
-									<div className="music-album">🎵</div>
-								</div>
-							</div>
+							   <div className="action-bar">
+								   <div className="action-item">
+									   <div className="avatar">{video.avatar}</div>
+									   <span className="follow-btn">+</span>
+								   </div>
+								   <div className="action-item">
+									   <div className="icon">❤️</div>
+									   <span className="count">{video.likes}</span>
+								   </div>
+								   <div className="action-item">
+									   <div className="icon">💬</div>
+									   <span className="count">{video.comments}</span>
+								   </div>
+								   <div className="action-item">
+									   <div className="icon">🔄</div>
+									   <span className="count">{video.shares}</span>
+								   </div>
+								   <div className="action-item">
+									   <div className="music-album">🎵</div>
+								   </div>
+							   </div>
 						</div>
 					))}
 					{loading && (
@@ -136,14 +113,7 @@ const TokTokHome: React.FC = () => {
 					)}
 				</div>
 
-				{/* Barra de navegación inferior */}
-				<div className="bottom-nav">
-					<div className="bottom-nav-item active">• Inicio</div>
-					<div className="bottom-nav-item">Descubrir</div>
-					<div className="bottom-nav-item create">+</div>
-					<div className="bottom-nav-item">Inbox</div>
-					<div className="bottom-nav-item">Perfil</div>
-				</div>
+				   {/* ...eliminado nav inferior... */}
 			</div>
 		</div>
 	);
