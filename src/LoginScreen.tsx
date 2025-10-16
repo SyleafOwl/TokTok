@@ -1,8 +1,12 @@
-import React, { useState } from 'react';
+// src/LoginScreen.tsx
 
-// --- Tipos de datos (Añadimos el tipo de usuario) ---
+import React, { useState } from 'react';
+// 🛑 CORRECCIÓN DE IMPORTACIÓN: Ahora apunta a TerminosCondiciones
+import TerminosCondiciones from './TerminosCondiciones'; 
+
+// --- Tipos de datos ---
 type LoginOption = 'phoneEmail' | 'qrCode' | 'social';
-type UserType = 'Streamer' | 'Viewer' | ''; // Agregamos el estado vacío para 'tipo de usuario?'
+type UserType = 'Streamer' | 'Viewer' | ''; 
 
 // 2. Componente de Botón Social (para reutilización)
 interface SocialButtonProps {
@@ -40,37 +44,36 @@ const LoginScreen: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'login' | 'signup'>('signup');
   const [selectedOption, setSelectedOption] = useState<LoginOption>('phoneEmail');
   
-  // Estado para el formulario
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
 
-  // 🎯 ESTADOS NUEVOS/MODIFICADOS
   const [userType, setUserType] = useState<UserType>('');
-  const [acceptedTerms, setAcceptedTerms] = useState<boolean>(false); // Nuevo estado para los términos
+  const [acceptedTerms, setAcceptedTerms] = useState<boolean>(false);
+  
+  // Estado CLAVE: Controla la vista actual
+  const [view, setView] = useState<'login' | 'terms'>('login'); 
 
   const handleLoginSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // 🎯 VALIDACIÓN: Si está en registro y no elige tipo de usuario
     if (activeTab === 'signup') {
         if (!userType) {
             alert("Por favor, selecciona un Tipo de Usuario: Streamer o Viewer.");
             return;
         }
-        if (!acceptedTerms) {
-            alert("Debes aceptar los Términos y Condiciones para registrarte.");
-            return;
-        }
+        if (!acceptedTerms) {
+            alert("Debes aceptar los Términos y Condiciones para registrarte.");
+            return;
+        }
     }
 
-    console.log(`Intentando ${activeTab} con: ${username}, Contraseña: ${password}, Tipo: ${userType || 'N/A'}`);
+    console.log(`Intentando ${activeTab} con: ${username}, Tipo: ${userType || 'N/A'}`);
   };
 
   const socialLogin = (provider: string) => {
     console.log(`Iniciando sesión con ${provider}`);
   };
 
-  // Estilo minimalista del contenedor (simulando un modal centrado)
   const containerStyle: React.CSSProperties = {
     maxWidth: '400px',
     margin: '50px auto',
@@ -82,6 +85,14 @@ const LoginScreen: React.FC = () => {
     fontFamily: 'sans-serif'
   };
 
+  // 🛑 Lógica de renderizado condicional: si view es 'terms', muestra los términos.
+  if (view === 'terms') {
+      // 🛑 CORRECCIÓN DE USO: Llama al componente renombrado
+      return <TerminosCondiciones onBack={() => setView('login')} />;
+  }
+
+
+  // Si view es 'login' (la vista por defecto), se renderiza todo el formulario:
   return (
     <div style={containerStyle}>
       <h2 style={{ color: '#000', marginBottom: '10px' }}>
@@ -122,6 +133,7 @@ const LoginScreen: React.FC = () => {
         >
           Código QR
         </button>
+        
       </div>
 
       {/* Opciones de Inicio de Sesión */}
@@ -174,7 +186,6 @@ const LoginScreen: React.FC = () => {
                                     backgroundColor: userType === type ? '#fe2c55' : 'white',
                                     color: userType === type ? 'white' : '#000',
                                     cursor: 'pointer',
-                                    fontWeight: 'bold',
                                     transition: 'background-color 0.2s'
                                 }}
                             >
@@ -185,35 +196,35 @@ const LoginScreen: React.FC = () => {
                 </div>
             )}
 
-            {/* 🎯 NUEVO ELEMENTO: Checkbox de Términos y Condiciones */}
-            {activeTab === 'signup' && (
-                <div style={{ margin: '15px 0 25px 0', textAlign: 'left', fontSize: '14px', fontWeight: 'bold', color: '#000' }}>
-                    <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
-                        <input
-                            type="checkbox"
-                            checked={acceptedTerms}
-                            onChange={(e) => setAcceptedTerms(e.target.checked)}
-                            required // Aunque ya validamos en handleLoginSubmit, es buena práctica
-                            style={{ marginRight: '8px', width: '16px', height: '16px' }}
-                        />
-                        Acepto los 
-                        <span 
-                            onClick={(e) => { 
-                                e.preventDefault(); 
-                                console.log('Navegando a Términos y Condiciones'); 
-                            }}
-                            style={{ 
-                                color: '#fe2c55', 
-                                cursor: 'pointer', 
-                                marginLeft: '4px',
-                                textDecoration: 'underline' // Para que parezca un enlace
-                            }}
-                        >
-                            Términos y Condiciones
-                        </span>
-                    </label>
-                </div>
-            )}
+            {/* Checkbox de Términos y Condiciones */}
+            {activeTab === 'signup' && (
+                <div style={{ margin: '15px 0 25px 0', textAlign: 'left', fontSize: '14px', fontWeight: 'bold', color: '#000' }}>
+                    <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+                        <input
+                            type="checkbox"
+                            checked={acceptedTerms}
+                            onChange={(e) => setAcceptedTerms(e.target.checked)}
+                            required
+                            style={{ marginRight: '8px', width: '16px', height: '16px' }}
+                        />
+                        Acepto los 
+                        <span 
+                            onClick={(e) => { 
+                                e.preventDefault(); 
+                                setView('terms'); 
+                            }}
+                            style={{ 
+                                color: '#fe2c55', 
+                                cursor: 'pointer', 
+                                marginLeft: '4px',
+                                textDecoration: 'underline'
+                            }}
+                        >
+                            Términos y Condiciones
+                        </span>
+                    </label>
+                </div>
+            )}
             
             {/* Botón Principal */}
             <button
@@ -266,7 +277,7 @@ const LoginScreen: React.FC = () => {
             onClick={() => {
                 setActiveTab(activeTab === 'login' ? 'signup' : 'login');
                 setUserType('');
-                setAcceptedTerms(false); // Resetear los términos al cambiar de pestaña
+                setAcceptedTerms(false);
             }}
             style={{ color: '#fe2c55', cursor: 'pointer', fontWeight: 'bold' }}
           >
