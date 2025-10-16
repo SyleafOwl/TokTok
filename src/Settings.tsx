@@ -37,7 +37,7 @@ const Settings: React.FC<SettingsProps> = ({ onBack, onLogout }) => {
         
         <div className="settings-section">
           <h2>Notificaciones</h2>
-          <div className="settings-item"><span>Notificaciones push</span><span>&gt;</span></div>
+          <div className="settings-item"><span>Notificaciones </span><span>&gt;</span></div>
           <div className="settings-item"><span>Notificaciones en la aplicación</span><span>&gt;</span></div>
         </div>
         
