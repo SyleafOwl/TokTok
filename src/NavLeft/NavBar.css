@@ -1,0 +1,81 @@
+.contenedor-navbar {
+    width: 220px;
+    min-width: 180px;
+    height: 100vh;
+    background: var(--sidebar-bg);
+    color: var(--text-primary);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    position: relative;
+    z-index: 10;
+    box-shadow: 2px 0 8px rgba(66, 58, 58, 0.08);
+    overflow: hidden;            /* el contenedor no scrollea, lo hará el menú */
+}
+
+.brand {
+    width: 100%;
+    padding: 1rem 1.2rem 0.5rem 1.2rem;
+}
+.brand-mark {
+    font-size: 1.25rem;
+    font-weight: 800;
+    letter-spacing: 0.3px;
+    color: #fff;
+}
+
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding-top: 0.5rem;
+    border-bottom: none;
+    flex: 1 1 auto;             /* ocupa todo el alto disponible */
+    overflow-y: auto;            /* aquí vive el scroll del menú */
+    overscroll-behavior: contain;
+    padding-bottom: 0.75rem;
+}
+
+/* Ocultar la barrita del scroll dentro del menú (mantiene el scroll funcional) */
+.sidebar-nav::-webkit-scrollbar { display: none; }
+.sidebar-nav { -ms-overflow-style: none; scrollbar-width: none; }
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.1rem;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-weight: 600;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    padding: 0.8rem 1.2rem;
+    margin: 0.2rem 0;
+    width: 100%;
+    color: var(--text-primary);
+    transition: background 0.2s, color 0.2s;
+}
+.nav-link:hover {
+    background-color: var(--hover-bg);
+    color: var(--accent);
+}
+.nav-link.active p, .nav-link.active .nav-icon { color: var(--accent); }
+.nav-link.active { background-color: rgba(100,108,255,0.1); }
+
+.nav-mini-link {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    text-align: left;
+    padding: 0.25rem 1.2rem;
+    cursor: pointer;
+    font-weight: 600;
+}
+.nav-mini-link:hover { color: var(--accent); }
+.nav-mini-note {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    padding: 0.2rem 1.2rem 0.6rem 1.2rem;
+}
+
+/* Footer antiguo eliminado: ahora usamos nav-mini-link y nav-mini-note bajo 'Más' */
