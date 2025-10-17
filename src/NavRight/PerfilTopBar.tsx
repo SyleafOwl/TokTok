@@ -4,6 +4,7 @@ import PhoneAndroidIcon from '@mui/icons-material/PhoneAndroid'
 import AccountCircleIcon from '@mui/icons-material/AccountCircle'
 import CompraIntis from '../Intis/CompraIntis'
 import './PerfilTopBar.css'
+import { getUserXP } from '../Perfil/xpStore'
 
 export interface PerfilTopBarProps {
   intis: number
@@ -19,6 +20,8 @@ const PerfilTopBar: React.FC<PerfilTopBarProps> = ({ intis, setIntis, onNavigate
   const [menuAbierto, setMenuAbierto] = useState(false)
   const menuRef = useRef<HTMLDivElement | null>(null)
   const [mostrarAvisoViewer, setMostrarAvisoViewer] = useState(false)
+  const [xpPct, setXpPct] = useState<number>(0)
+  const [xpLevel, setXpLevel] = useState<number>(1)
 
   const manejarCompra = (monto: number) => {
     setIntis((prev) => prev + monto)
@@ -43,6 +46,19 @@ const PerfilTopBar: React.FC<PerfilTopBarProps> = ({ intis, setIntis, onNavigate
     if (menuAbierto) window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [menuAbierto])
+
+  // mientras el menú está abierto, refrescar XP del viewer cada ~1s
+  useEffect(() => {
+    if (!menuAbierto || rol !== 'viewer' || !usuario) return
+    const sync = () => {
+      const xp = getUserXP(usuario!)
+      setXpPct(xp.pct)
+      setXpLevel(xp.level)
+    }
+    sync()
+    const id = setInterval(sync, 1000)
+    return () => clearInterval(id)
+  }, [menuAbierto, rol, usuario])
 
   return (
     <div className="perfil-topbar-container" role="banner">
@@ -79,6 +95,16 @@ const PerfilTopBar: React.FC<PerfilTopBarProps> = ({ intis, setIntis, onNavigate
 
       {menuAbierto && (
         <div ref={menuRef} className="perfil-menu" role="menu" aria-label="Menú de perfil">
+          {/* Encabezado con nombre de usuario y progreso (solo viewer) */}
+          <div className="perfil-menu__header">
+            <div className="perfil-menu__user">{usuario ? `@${usuario}` : 'Invitado'}</div>
+            {rol === 'viewer' && (
+              <div className="perfil-menu__xp">
+                <div className="perfil-menu__xpbar"><span style={{ width: `${xpPct}%` }}/></div>
+                <div className="perfil-menu__xplevel">Nivel {xpLevel}</div>
+              </div>
+            )}
+          </div>
           <button className="perfil-menu__item" role="menuitem" onClick={() => { setMenuAbierto(false); onNavigate && onNavigate('perfil') }}>Tu Perfil</button>
           <button
             className="perfil-menu__item"

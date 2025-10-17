@@ -79,6 +79,13 @@
   z-index: 80;
 }
 
+.perfil-menu__header { padding: 0.4rem 0.5rem 0.6rem 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.08); margin-bottom: 0.4rem; }
+.perfil-menu__user { font-weight: 800; margin-bottom: 6px; }
+.perfil-menu__xp { display: flex; align-items: center; gap: 8px; }
+.perfil-menu__xpbar { position: relative; flex: 1; height: 6px; background: rgba(255,255,255,0.08); border-radius: 999px; overflow: hidden; }
+.perfil-menu__xpbar span { position: absolute; left: 0; top: 0; bottom: 0; background: linear-gradient(90deg, #7c3aed, #22d3ee); border-radius: 999px; }
+.perfil-menu__xplevel { font-size: 11px; opacity: 0.9; white-space: nowrap; }
+
 .perfil-menu__item {
   width: 100%;
   text-align: left;

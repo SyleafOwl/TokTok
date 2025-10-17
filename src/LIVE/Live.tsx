@@ -5,6 +5,7 @@ import RegalosPanel, { Regalo } from '../Regalos/RegalosPanel'
 import RegalosOverlay from '../Regalos/RegalosOverlay'
 import AnimacionGift, { type GiftToast } from '../Regalos/AnimacionGift'
 import { loadRegalos, saveRegalos, REGALOS_BASE } from '../Regalos/regalosStore'
+import { addWatchSeconds } from '../Perfil/xpStore'
 
 export type RolUsuario = 'viewer' | 'streamer'
 
@@ -52,6 +53,15 @@ const Live: React.FC<Props> = ({ usuario, rol = 'viewer' }) => {
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [])
+
+  // Sumar puntos de visualización a viewers: 1 punto/segundo mientras está en LIVE
+  useEffect(() => {
+    if (rol !== 'viewer' || !usuario) return
+    const id = setInterval(() => {
+      addWatchSeconds(usuario, 1)
+    }, 1000)
+    return () => clearInterval(id)
+  }, [rol, usuario])
 
   const toggleGift = (id: number) => {
     setOpenGiftFor((curr) => (curr === id ? null : id))
