@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import Home from './Home.tsx'
 import NavBar from './Navigation/NavBar.tsx'
+import Top_Header from './header/Top_Header.tsx'
 
 // Activar modo oscuro por defecto
 document.body.classList.add('theme-dark')

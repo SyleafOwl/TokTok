@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import './Home.css';
+import Top_Header from './header/Top_Header.tsx'
 
 
 // ========================= REGALOS =========================
@@ -39,6 +40,8 @@ const TokTokHome: React.FC = () => {
 	const videoContainerRef = useRef<HTMLDivElement>(null);
 	// ID del video cuyo panel de regalos está abierto (o null si ninguno)
 	const [openGiftFor, setOpenGiftFor] = useState<number | null>(null);
+	const [coinCount, setCoinCount] = useState(0);
+	const [giftError, setGiftError] = useState<string | null>(null);
 	// Ya no es necesario cargar los primeros videos en useEffect
 
 	useEffect(() => {
@@ -83,8 +86,15 @@ const TokTokHome: React.FC = () => {
 	// Maneja el envío de un regalo (por ahora solo muestra un mensaje).
 	// Aquí en el futuro se integrará la lógica de monedas / pagos / animaciones.
 	const handleSendGift = (videoId: number, gift: Gift) => {
-		alert(`Enviado ${gift.emoji} ${gift.name} (coste: ${gift.cost} monedas) al video #${videoId}`);
-		setOpenGiftFor(null);
+		if (coinCount >= gift.cost) {
+			alert(`Enviado ${gift.emoji} ${gift.name} (coste: ${gift.cost} monedas) al video #${videoId}`);
+			setCoinCount(c => c - gift.cost);
+			setOpenGiftFor(null);
+			setGiftError(null);
+		} else {
+			const falta = gift.cost - coinCount;
+			setGiftError(`Te faltan ${falta} monedas para enviar este regalo.`);
+		}
 	};
 
 	return (
@@ -139,7 +149,7 @@ const TokTokHome: React.FC = () => {
 									<span className="count">{video.shares}</span>
 								</div>
 								{/* Botón de regalos: abre/cierra el panel */}
-								<div className="action-item" onClick={() => toggleGiftPanel(video.id)}>
+								<div className="action-item" onClick={() => { setGiftError(null); toggleGiftPanel(video.id) }}>
 									<div className="icon">🎁</div>
 									<span className="count">Regalos</span>
 								</div>
@@ -166,6 +176,7 @@ const TokTokHome: React.FC = () => {
 											</button>
 										))}
 									</div>
+									{giftError && <div style={{color: 'red', marginTop: '0.5rem', fontWeight: 600}}>{giftError}</div>}
 								</div>
 							)}
 							</div>
@@ -177,6 +188,8 @@ const TokTokHome: React.FC = () => {
 						</div>
 					)}
 				</div>
+
+				<Top_Header coinCount={coinCount} setCoinCount={setCoinCount} />
 
 				   {/* ...eliminado nav inferior... */}
 			</div>
