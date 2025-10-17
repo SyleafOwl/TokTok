@@ -1,0 +1,276 @@
+
+/* Estilos Globales y Contenedor*/
+.app-container {
+    min-height: 100vh;
+    background-color: #f3f4f6; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Inter', sans-serif;
+}
+
+.login-container {
+    max-width: 400px;
+    margin: 3rem auto;
+    padding: 32px; 
+    background-color: white;
+    border-radius: 12px; 
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); 
+    text-align: center;
+}
+
+.login-title {
+    font-size: 1.5rem; 
+    font-weight: 700; 
+    margin-bottom: 8px; 
+    color: #1f2937; 
+}
+
+.login-subtitle {
+    color: #4b5563; 
+    margin-bottom: 24px; 
+    font-size: 0.875rem; 
+    font-weight: 700; 
+}
+
+
+/* Estilos de Navegación (Tabs)*/
+
+
+.tab-selector {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px; 
+}
+
+.tab-button {
+    color: #1f2937;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 700;
+    transition: background-color 0.2s;
+}
+
+.tab-button.active {
+    background-color: #e5e7eb;
+}
+
+.tab-button:not(.active):hover {
+    background-color: #f3f4f6; 
+}
+
+
+/* Estilos de Formulario*/
+
+
+.input-field {
+    width: 100%;
+    padding: 12px; 
+    margin: 8px 0;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.input-field:focus {
+    border-color: #ef4444; 
+    box-shadow: 0 0 0 1px #ef4444; 
+}
+
+.input-field.last {
+    margin-bottom: 20px; 
+}
+
+/* Selector de Tipo de Usuario */
+
+.user-type-box {
+    margin-bottom: 20px; 
+    text-align: left;
+    padding: 12px; 
+    border: 1px solid;
+    border-radius: 8px; 
+}
+
+/* Clases dinámicas manejadas por React para el estado de error/alerta */
+.user-type-box.error-border {
+    border-color: #ef4444; 
+}
+.user-type-box.default-border {
+    border-color: #d1d5db; 
+}
+
+.user-type-title {
+    margin: 0 0 12px 0; 
+    font-weight: 700;
+}
+
+/* Clases dinámicas manejadas por React para el estado de error/alerta */
+.user-type-title.error-text {
+    color: #ef4444; 
+}
+.user-type-title.default-text {
+    color: #1f2937; 
+}
+
+
+.user-type-options {
+    display: flex;
+    justify-content: space-around;
+}
+
+.type-button {
+    padding: 8px 16px; 
+    border: 1px solid;
+    border-radius: 9999px; 
+    cursor: pointer;
+    transition: background-color 0.2s, opacity 0.2s;
+    font-weight: 500;
+}
+
+.type-button:hover {
+    opacity: 0.9;
+}
+
+.type-button.active {
+    background-color: #ef4444; 
+    color: white;
+    border-color: #ef4444;
+}
+
+.type-button.inactive {
+    background-color: white;
+    color: #1f2937;
+    border-color: #9ca3af; 
+}
+
+
+
+/* Botón de Submit */
+
+.submit-button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 8px; 
+    background-color: #ef4444; 
+    color: white;
+    font-size: 1.125rem; 
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.submit-button:hover {
+    background-color: #dc2626; 
+}
+
+/* Opciones Sociales */
+
+.social-options {
+    color: #1f2937;
+    margin-top: 20px; 
+}
+
+.social-divider {
+    color: #4b5563;
+    margin: 16px 0; 
+    font-weight: 700;
+}
+
+.social-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 12px; 
+    margin: 8px 0; 
+    border: 1px solid #d1d5db; 
+    border-radius: 8px; 
+    cursor: pointer;
+    background-color: white;
+    color: #1f2937;
+    font-size: 1rem; 
+    font-weight: 700;
+    transition: background-color 0.2s;
+}
+
+.social-button:hover {
+    background-color: #f3f4f6; 
+}
+
+.social-icon {
+    margin-right: 12px; 
+    font-size: 1.25rem; 
+}
+
+/* Código QR */
+
+.qr-section {
+    padding: 40px 0; 
+}
+
+.qr-code-box {
+    width: 128px; 
+    height: 128px; 
+    background-color: #f3f4f6;
+    border: 1px solid #d1d5db;
+    margin: 0 auto; 
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.25rem; 
+    color: #6b7280; 
+}
+
+.qr-code-text {
+    color: #1f2937;
+    margin-top: 16px; 
+}
+
+
+/* Descubre más */
+
+.discover-more {
+    color: #1f2937;
+    margin-top: 32px; 
+    font-size: 0.875rem; 
+    text-align: center;
+}
+
+.discover-link {
+    color: #ef4444;
+    cursor: pointer;
+    font-weight: 700;
+    margin-left: 4px; 
+}
+
+.discover-link:hover {
+    color: #dc2626;
+}
+
+/* Footer */
+
+.footer-content {
+    color: #1f2937;
+    margin-top: 16px; 
+    font-size: 0.875rem;
+    padding-top: 16px; 
+    border-top: 1px solid #e5e7eb; 
+    font-weight: 700;
+}
+
+.footer-action-link {
+    color: #ef4444;
+    cursor: pointer;
+    font-weight: 700;
+}
+
+.footer-action-link:hover {
+    color: #dc2626;
+}
+
