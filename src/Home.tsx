@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import './Home.css';
 import ComentariosPanel from './Comentarios/ComentariosPanel';
+import RegalosPanel, { Regalo } from './Regalos/RegalosPanel';
 
 // Hola, todos estos comentarios si estan hecho con IA para explicar el codigo
 // y ayudar a entender la logica detras de cada parte.
@@ -10,7 +11,7 @@ import ComentariosPanel from './Comentarios/ComentariosPanel';
 // - emoji: lo que se muestra
 // - name: nombre del regalo
 // - cost: coste ficticio en "monedas" (sin lógica aún)
-type Gift = { id: string; emoji: string; name: string; cost: number };
+type Gift = Regalo;
 const GIFTS: Gift[] = [
 	{ id: 'owl', emoji: '🦉', name: 'Búho', cost: 5 },
 	{ id: 'rose', emoji: '🌹', name: 'Rosa', cost: 10 },
@@ -177,26 +178,14 @@ const TokTokHome: React.FC = () => {
 									<div className="music-album">🎵</div>
 								</div>
 							</div>
-							{/* Panel flotante de regalos con 6 opciones */}
+							{/* Panel flotante de regalos reutilizable */}
 							{openGiftFor === video.id && (
-								<div className="gift-panel">
-									<div className="gift-title">Enviar regalo</div>
-									<div className="gift-grid">
-										{GIFTS.map((g) => (
-											<button
-												key={g.id}
-												className="gift-item"
-												onClick={() => handleSendGift(video.id, g)}
-											>
-												<span className="gift-emoji" aria-hidden>
-													{g.emoji}
-												</span>
-												<span className="gift-name">{g.name}</span>
-												<span className="gift-cost">{g.cost} monedas</span>
-											</button>
-										))}
-									</div>
-								</div>
+								<RegalosPanel
+									abierto
+									regalos={GIFTS}
+									onEnviar={(g) => handleSendGift(video.id, g)}
+									onCerrar={() => setOpenGiftFor(null)}
+								/>
 							)}
 							</div>
 						</div>

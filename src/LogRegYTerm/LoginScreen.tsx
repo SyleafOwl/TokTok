@@ -30,9 +30,11 @@ interface LoginScreenProps {
   show?: boolean
   onSuccess: () => void
   onClose?: () => void
+  // opcional: reportar usuario/rol al app
+  onLoginCustom?: (username: string, role: 'viewer' | 'streamer') => void
 }
 
-const LoginScreen: React.FC<LoginScreenProps> = ({ show = true, onSuccess }) => {
+const LoginScreen: React.FC<LoginScreenProps> = ({ show = true, onSuccess, onLoginCustom }) => {
   const [activeTab, setActiveTab] = useState<'login' | 'signup'>('signup');
   const [selectedOption, setSelectedOption] = useState<LoginOption>('phoneEmail');
   const [username, setUsername] = useState<string>('');
@@ -43,11 +45,19 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ show = true, onSuccess }) => 
 
   const handleLoginSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    // Viewer por defecto
     if (username === 'admin' && password === 'admin') {
+      onLoginCustom && onLoginCustom('admin', 'viewer')
       onSuccess();
       return;
     }
-    alert('Credenciales inválidas. Usa usuario: admin y contraseña: admin');
+    // Streamer 1
+    if (username === 'Streamer1' && password === '1234') {
+      onLoginCustom && onLoginCustom('Streamer1', 'streamer')
+      onSuccess();
+      return;
+    }
+    alert('Credenciales inválidas. Usa viewer: admin/admin o streamer: Streamer1/1234');
   };
 
   const overlayStyle: React.CSSProperties = {

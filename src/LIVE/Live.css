@@ -1,0 +1,14 @@
+@import '../Home.css';
+
+/* Estilos específicos (si se requieren) para LIVE */
+.live-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: #fe2c55;
+  color: #fff;
+  font-weight: 800;
+  padding: 4px 8px;
+  border-radius: 6px;
+  letter-spacing: 0.5px;
+}

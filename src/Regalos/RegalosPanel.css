@@ -1,0 +1,87 @@
+.gift-panel {
+  position: absolute;
+  right: calc(var(--gift-panel-gap-x, 16px) + 60px);
+  top: calc(50% + var(--gift-panel-offset-y, 0px));
+  transform: translateY(-50%);
+  width: var(--gift-panel-width, 320px);
+  background: var(--sidebar-bg);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  box-shadow: -8px 8px 24px rgba(0,0,0,0.35);
+  padding: 12px;
+  color: var(--text-primary);
+  z-index: 60;
+}
+
+.gift-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.gift-title { font-weight: 700; }
+.gift-close {
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 8px;
+  padding: 4px 8px;
+  cursor: pointer;
+}
+.gift-edit {
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 8px;
+  padding: 4px 8px;
+  cursor: pointer;
+  margin-right: 6px;
+}
+
+.gift-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--gift-grid-columns, 3), 1fr);
+  gap: 8px;
+}
+.gift-item {
+  background: var(--card-bg);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  padding: var(--gift-item-padding, 10px);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.gift-item-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  color: var(--on-card-text);
+  cursor: pointer;
+  text-align: left;
+}
+.gift-emoji { font-size: var(--gift-emoji-size, 28px); }
+.gift-name { font-weight: 700; }
+.gift-name-input {
+  flex: 1;
+  min-width: 0;
+  padding: 6px 8px;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 8px;
+  color: var(--on-card-text);
+  font-weight: 700;
+}
+.gift-cost { color: var(--on-card-secondary); font-size: 13px; }
+.gift-cost-row { display: flex; align-items: center; gap: 6px; }
+.gift-cost-input {
+  width: 80px;
+  padding: 6px 8px;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 8px;
+  color: var(--on-card-text);
+}
+.gift-cost-sufijo { color: var(--on-card-secondary); font-size: 12px; }

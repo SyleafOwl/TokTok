@@ -7,8 +7,8 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 type NavBarProps = {
-    onNavigate?: (to: 'home' | 'settings' | 'perfil' | 'nosotros') => void
-    current?: 'home' | 'settings' | 'perfil' | 'nosotros'
+    onNavigate?: (to: 'home' | 'settings' | 'perfil' | 'nosotros' | 'live') => void
+    current?: 'home' | 'settings' | 'perfil' | 'nosotros' | 'live'
 }
 
 const NavBar: React.FC<NavBarProps> = ({ onNavigate, current }) => {
@@ -36,7 +36,7 @@ const NavBar: React.FC<NavBarProps> = ({ onNavigate, current }) => {
                     </div>
                     <p>Siguiendo</p>
                 </div>
-                <div className={`nav-link ${current === 'home' ? '' : ''}`}> {/* placeholder para LIVE */}
+                <div className={`nav-link ${current === 'live' ? 'active' : ''}`} onClick={() => onNavigate && onNavigate('live')}>
                     <div className="nav-icon">
                         <LiveTvIcon/>
                     </div>
