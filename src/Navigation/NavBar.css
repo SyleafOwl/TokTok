@@ -25,6 +25,10 @@
     padding-bottom: 0.75rem;
 }
 
+/* Ocultar la barrita del scroll dentro del menú (mantiene el scroll funcional) */
+.sidebar-nav::-webkit-scrollbar { display: none; }
+.sidebar-nav { -ms-overflow-style: none; scrollbar-width: none; }
+
 .nav-link {
     display: flex;
     align-items: center;

@@ -13,7 +13,7 @@ import "./Perfil.css"
 const datosUsuario = {
     nombre: 'Usuario de prueba',
     usuario: 'TheUserPW',
-    imagenUrl: 'https://i.pinimg.com/1200x/a5/65/6c/a5656c180fedac78f1f913abc7253015.jpg',
+    imagenUrl: 'https://preview.redd.it/z1gd2kwa4a361.jpg?width=1080&crop=smart&auto=webp&s=f0be45d17874f0dd0437eca0032b596cb66951db',
     bio: 'Biografía de usuario de prueba',
     estadisticas: {
         seguidos: 846,

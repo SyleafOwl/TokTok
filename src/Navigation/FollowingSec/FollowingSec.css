@@ -18,11 +18,17 @@
     padding-left: 0;
 }
 
+/* Muestra 3 elementos por defecto cuando no está expandido */
+.following-accountlist.limited li:nth-child(n+4) {
+    display: none;
+}
+
 li {
     padding: 0.2rem;
 }
 
-button {
+/* Botones solo dentro de la sección following para no pisar estilos globales */
+.following-item-btn, .following-more {
     background: transparent;
     border: none;
     box-shadow: none;
@@ -40,9 +46,9 @@ button {
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    &:hover {
-        background-color: var(--hover-bg)
-    }
+}
+.button-content:hover {
+    background-color: var(--hover-bg)
 }
 
 .button-content > a:first-child {
@@ -69,4 +75,14 @@ button {
 
 .button-structure > p {
     margin: 0;
+}
+
+.following-avatar svg { width: 20px; height: 20px; }
+
+.following-more {
+    display: inline-block;
+    width: auto;
+    padding: 0.25rem 0.5rem;
+    border-radius: 6px;
+    margin-top: 0.25rem;
 }
