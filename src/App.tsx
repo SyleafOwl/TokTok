@@ -3,7 +3,7 @@ import NavBar from './Navigation/NavBar'
 import Home from './Home'
 import PerfilPage from './Perfil/Perfil'
 import Settings from './Settings/Settings'
-import LoginScreen from './LoginScreen'
+import LoginScreen from './LogRegYTerm/LoginScreen'
 import Nosotros from './Nosotros/Nosotros'
 
 // App simple sin router: mantiene NavBar fijo y cambia el panel derecho
