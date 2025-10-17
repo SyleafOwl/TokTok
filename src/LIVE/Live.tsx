@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from 'react'
 import './Live.css'
 import ComentariosPanel from '../Comentarios/ComentariosPanel'
 import RegalosPanel, { Regalo } from '../Regalos/RegalosPanel'
+import RegalosOverlay from '../Regalos/RegalosOverlay'
+import { loadRegalos, saveRegalos, REGALOS_BASE } from '../Regalos/regalosStore'
 
 export type RolUsuario = 'viewer' | 'streamer'
 
@@ -10,15 +12,7 @@ type Props = {
   rol?: RolUsuario
 }
 
-// Regalos base
-const REGALOS_BASE: Regalo[] = [
-  { id: 'owl', emoji: '🦉', name: 'Búho', cost: 5 },
-  { id: 'rose', emoji: '🌹', name: 'Rosa', cost: 10 },
-  { id: 'lion', emoji: '🦁', name: 'León', cost: 25 },
-  { id: 'confetti', emoji: '🎉', name: 'Confetti', cost: 50 },
-  { id: 'mic', emoji: '🎤', name: 'Micrófono', cost: 75 },
-  { id: 'gem', emoji: '💎', name: 'Diamante', cost: 100 },
-]
+// Regalos base vienen del store compartido
 
 type LiveItem = {
   id: number
@@ -41,13 +35,16 @@ const Live: React.FC<Props> = ({ usuario, rol = 'viewer' }) => {
   const [openCommentsFor, setOpenCommentsFor] = useState<number | null>(null)
   const contRef = useRef<HTMLDivElement>(null)
   const [modoEdicion, setModoEdicion] = useState<boolean>(false)
+  const [verTodosPara, setVerTodosPara] = useState<number | null>(null)
 
   // Solo el primer LIVE (user=Streamer1) puede editar regalos si el rol del usuario es streamer y usuario es 'Streamer1'
   const puedeEditar = (live: LiveItem) => rol === 'streamer' && usuario === 'Streamer1' && live.user === 'Streamer1'
 
   useEffect(() => {
+    // cargar regalos compartidos
+    setRegalos(loadRegalos())
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') { setOpenGiftFor(null); setOpenCommentsFor(null) }
+      if (e.key === 'Escape') { setOpenGiftFor(null); setOpenCommentsFor(null); setVerTodosPara(null) }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
@@ -68,10 +65,18 @@ const Live: React.FC<Props> = ({ usuario, rol = 'viewer' }) => {
   }
 
   const onCambiarCosto = (id: string, nuevoCosto: number) => {
-    setRegalos((prev) => prev.map((r) => (r.id === id ? { ...r, cost: nuevoCosto } : r)))
+    setRegalos((prev) => {
+      const next = prev.map((r) => (r.id === id ? { ...r, cost: nuevoCosto } : r))
+      saveRegalos(next)
+      return next
+    })
   }
   const onCambiarNombre = (id: string, nuevoNombre: string) => {
-    setRegalos((prev) => prev.map((r) => (r.id === id ? { ...r, name: nuevoNombre } : r)))
+    setRegalos((prev) => {
+      const next = prev.map((r) => (r.id === id ? { ...r, name: nuevoNombre } : r))
+      saveRegalos(next)
+      return next
+    })
   }
 
   return (
@@ -131,8 +136,24 @@ const Live: React.FC<Props> = ({ usuario, rol = 'viewer' }) => {
                     titulo={puedeEditar(live) ? (modoEdicion ? 'Regalos (edición)' : 'Regalos') : 'Enviar regalo'}
                     mostrarEditar={puedeEditar(live)}
                     onToggleEditar={() => setModoEdicion((m) => !m)}
+                    columnas={2}
+                    maxItems={6}
+                    onVerTodos={() => setVerTodosPara(live.id)}
                   />
                 )}
+        {verTodosPara !== null && (
+          <RegalosOverlay
+            abierto
+            regalos={regalos}
+            onEnviar={(g) => onEnviarRegalo(verTodosPara!, g)}
+            onCerrar={() => setVerTodosPara(null)}
+            editable={lives.find((l) => l.id === verTodosPara) ? puedeEditar(lives.find((l) => l.id === verTodosPara)!) && modoEdicion : false}
+            onCambiarCosto={onCambiarCosto}
+            onCambiarNombre={onCambiarNombre}
+            mostrarEditar={lives.find((l) => l.id === verTodosPara) ? puedeEditar(lives.find((l) => l.id === verTodosPara)!) : false}
+            onToggleEditar={() => setModoEdicion((m) => !m)}
+          />
+        )}
               </div>
             </div>
           ))}

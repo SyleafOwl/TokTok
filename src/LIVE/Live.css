@@ -1,4 +1,5 @@
 @import '../Home.css';
+@import '../Regalos/RegalosOverlay.css';
 
 /* Estilos específicos (si se requieren) para LIVE */
 .live-badge {
@@ -11,4 +12,5 @@
   padding: 4px 8px;
   border-radius: 6px;
   letter-spacing: 0.5px;
+  z-index: 1;
 }

@@ -8,7 +8,7 @@ import './PerfilTopBar.css'
 export interface PerfilTopBarProps {
   intis: number
   setIntis: React.Dispatch<React.SetStateAction<number>>
-  onNavigate?: (to: 'home' | 'settings' | 'perfil' | 'nosotros') => void
+  onNavigate?: (to: 'home' | 'settings' | 'perfil' | 'nosotros' | 'regalos') => void
   onLogout?: () => void
 }
 
@@ -78,6 +78,7 @@ const PerfilTopBar: React.FC<PerfilTopBarProps> = ({ intis, setIntis, onNavigate
         <div ref={menuRef} className="perfil-menu" role="menu" aria-label="Menú de perfil">
           <button className="perfil-menu__item" role="menuitem" onClick={() => { setMenuAbierto(false); onNavigate && onNavigate('perfil') }}>Ver tu perfil</button>
           <button className="perfil-menu__item" role="menuitem" onClick={() => { setMenuAbierto(false); onNavigate && onNavigate('settings') }}>Opciones</button>
+          <button className="perfil-menu__item" role="menuitem" onClick={() => { setMenuAbierto(false); onNavigate && onNavigate('regalos') }}>Regalos</button>
           <div className="perfil-menu__separator"/>
           <button className="perfil-menu__item perfil-menu__danger" role="menuitem" onClick={() => { setMenuAbierto(false); onLogout && onLogout() }}>Cerrar sesión</button>
         </div>

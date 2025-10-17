@@ -50,38 +50,56 @@
   padding: var(--gift-item-padding, 10px);
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
+}
+.gift-more {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px dashed rgba(255,255,255,0.25);
+  cursor: pointer;
+}
+.gift-item-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 .gift-item-button {
   display: flex;
   align-items: center;
+  justify-content: flex-start;
+  width: 100%;
   gap: 8px;
   background: transparent;
   border: none;
   color: var(--on-card-text);
   cursor: pointer;
   text-align: left;
+  min-height: 38px;
 }
 .gift-emoji { font-size: var(--gift-emoji-size, 28px); }
 .gift-name { font-weight: 700; }
 .gift-name-input {
   flex: 1;
   min-width: 0;
-  padding: 6px 8px;
-  background: transparent;
-  border: 1px solid rgba(255,255,255,0.2);
-  border-radius: 8px;
+  padding: 8px 10px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 10px;
   color: var(--on-card-text);
   font-weight: 700;
+  outline: none;
 }
 .gift-cost { color: var(--on-card-secondary); font-size: 13px; }
-.gift-cost-row { display: flex; align-items: center; gap: 6px; }
+.gift-cost-row { display: flex; align-items: center; gap: 8px; }
 .gift-cost-input {
-  width: 80px;
-  padding: 6px 8px;
-  background: transparent;
-  border: 1px solid rgba(255,255,255,0.2);
-  border-radius: 8px;
+  width: 88px;
+  padding: 8px 10px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 10px;
   color: var(--on-card-text);
+  outline: none;
 }
 .gift-cost-sufijo { color: var(--on-card-secondary); font-size: 12px; }

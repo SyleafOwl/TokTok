@@ -7,9 +7,10 @@ import LoginScreen from './LogRegYTerm/LoginScreen'
 import Nosotros from './Nosotros/Nosotros'
 import PerfilTopBar from './NavRight/PerfilTopBar'
 import Live from './LIVE/Live'
+import RegalosPage from './Regalos/Regalos'
 
 // App simple sin router: mantiene NavBar fijo y cambia el panel derecho
-export type PageKey = 'home' | 'settings' | 'perfil' | 'nosotros' | 'live'
+export type PageKey = 'home' | 'settings' | 'perfil' | 'nosotros' | 'live' | 'regalos'
 
 const App: React.FC = () => {
   const [page, setPage] = useState<PageKey>('home')
@@ -42,6 +43,11 @@ const App: React.FC = () => {
       {page === 'live' && (
         <div style={{ flex: 1, overflow: 'hidden' }}>
           <Live usuario={usuario} rol={rol} />
+        </div>
+      )}
+      {page === 'regalos' && (
+        <div style={{ flex: 1, overflow: 'auto' }}>
+          <RegalosPage usuario={usuario} rol={rol} />
         </div>
       )}
       {page === 'settings' && (

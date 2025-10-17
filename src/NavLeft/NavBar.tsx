@@ -7,8 +7,8 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 type NavBarProps = {
-    onNavigate?: (to: 'home' | 'settings' | 'perfil' | 'nosotros' | 'live') => void
-    current?: 'home' | 'settings' | 'perfil' | 'nosotros' | 'live'
+    onNavigate?: (to: 'home' | 'settings' | 'perfil' | 'nosotros' | 'live' | 'regalos') => void
+    current?: 'home' | 'settings' | 'perfil' | 'nosotros' | 'live' | 'regalos'
 }
 
 const NavBar: React.FC<NavBarProps> = ({ onNavigate, current }) => {
@@ -62,6 +62,8 @@ const NavBar: React.FC<NavBarProps> = ({ onNavigate, current }) => {
                 </div>
                 {/* Insertar Quienes Somos y PW2025-2 justo debajo de Más */}
                 <button className="nav-mini-link" onClick={() => onNavigate && onNavigate('nosotros')}>Quiénes Somos</button>
+                {/* Acceso directo opcional a Regalos */}
+                {/* <button className="nav-mini-link" onClick={() => onNavigate && onNavigate('regalos')}>Regalos</button> */}
                 <div className="nav-mini-note">PW2025-2</div>
             </div>
         </div>

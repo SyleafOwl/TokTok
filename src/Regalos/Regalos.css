@@ -1,0 +1,61 @@
+.regalos-page {
+  flex: 1;
+  min-height: 100vh;
+  background: var(--app-bg);
+  color: var(--text-primary);
+  padding: 24px 24px 48px 24px;
+}
+
+.regalos-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1100px;
+  margin: 0 auto 16px auto;
+}
+.regalos-title { font-size: 20px; font-weight: 800; }
+.regalos-actions { display: flex; gap: 8px; }
+.regalos-btn { background: transparent; border: 1px solid rgba(255,255,255,0.12); color: var(--text-primary); border-radius: 10px; padding: 8px 12px; cursor: pointer; }
+
+.regalos-grid {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.regalo-card {
+  background: var(--card-bg);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.regalo-row { display: flex; align-items: center; gap: 8px; }
+.regalo-emoji { font-size: 28px; }
+.regalo-name { font-weight: 700; }
+.regalo-cost { color: var(--on-card-secondary); font-size: 13px; }
+
+.regalo-input {
+  flex: 1; min-width: 0; padding: 8px 10px; background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.18); border-radius: 10px; color: var(--on-card-text); font-weight: 700;
+}
+.regalo-cost-input { width: 100px; padding: 8px 10px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.18); border-radius: 10px; color: var(--on-card-text); }
+
+/* Modal para crear regalo */
+.regalo-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.55); display: flex; align-items: center; justify-content: center; z-index: 2000; }
+.regalo-modal { width: 420px; background: var(--sidebar-bg); color: var(--text-primary); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); padding: 16px; }
+.regalo-modal h4 { margin: 0 0 12px 0; }
+.regalo-form { display: flex; flex-direction: column; gap: 10px; }
+.regalo-form-row { display: flex; gap: 8px; }
+.regalo-form input { flex: 1; padding: 10px 12px; background: transparent; border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; color: var(--text-primary); }
+.regalo-modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; }
+.btn-primary { background: var(--accent); border: none; color: #fff; }
+.btn-ghost { background: transparent; border: 1px solid rgba(255,255,255,0.12); }
+
+@media (max-width: 980px) { .regalos-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 720px) { .regalos-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 460px) { .regalos-grid { grid-template-columns: repeat(1, minmax(0, 1fr)); } }

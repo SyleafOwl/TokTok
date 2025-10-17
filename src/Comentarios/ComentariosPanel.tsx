@@ -26,7 +26,7 @@ const getMockComments = (videoId: number): Comment[] => {
     id: `${videoId}-${i}`,
     user: `usuario_${(base + i) % 99}`,
     avatar: String.fromCharCode(65 + ((base + i) % 26)),
-    text: `Comentario de prueba #${i + 1} en el video ${videoId}. ¡Muy bueno! 🔥`,
+    text: `Comentario de prueba #${i + 1} en el video ${videoId}. UN 20 pe PROFE`,
     time: `${1 + ((base + i) % 12)}h`,
     likes: (base + i * 3) % 200,
   }))
