@@ -25,6 +25,21 @@
     padding-bottom: 0.75rem;
 }
 
+.sidebar-nav::-webkit-scrollbar {
+    background: #ededed;
+    border-radius: 0.5rem;
+}
+
+.sidebar-nav::-webkit-scrollbar-track {
+    border-radius: 0.5rem;
+    background-color: transparent;
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb {
+    background: linear-gradient(90deg, #25F4EE 0%, #FE2C55 100%);
+    border-radius: 0.5rem;
+}
+
 .nav-link {
     display: flex;
     align-items: center;
