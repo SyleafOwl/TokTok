@@ -39,8 +39,15 @@ const SocialButton: React.FC<SocialButtonProps> = ({ icon, label, onClick }) => 
   </button>
 );
 
-// 3. Componente Principal de la Pantalla de Login
-const LoginScreen: React.FC = () => {
+// Props para usar el Login como overlay encima del Home
+interface LoginScreenProps {
+  show?: boolean
+  onSuccess: () => void
+  onClose?: () => void
+}
+
+// 3. Componente Principal de la Pantalla de Login (overlay)
+const LoginScreen: React.FC<LoginScreenProps> = ({ show = true, onSuccess }) => {
   const [activeTab, setActiveTab] = useState<'login' | 'signup'>('signup');
   const [selectedOption, setSelectedOption] = useState<LoginOption>('phoneEmail');
   
@@ -53,28 +60,31 @@ const LoginScreen: React.FC = () => {
   // Estado CLAVE: Controla la vista actual
   const [view, setView] = useState<'login' | 'terms'>('login'); 
 
-  const handleLoginSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (activeTab === 'signup') {
-        if (!userType) {
-            alert("Por favor, selecciona un Tipo de Usuario: Streamer o Viewer.");
-            return;
-        }
-        if (!acceptedTerms) {
-            alert("Debes aceptar los Términos y Condiciones para registrarte.");
-            return;
-        }
-    }
-
-    console.log(`Intentando ${activeTab} con: ${username}, Tipo: ${userType || 'N/A'}`);
-  };
+  const handleLoginSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Validación simple: usuario y contraseña deben ser "admin"
+    if (username === 'admin' && password === 'admin') {
+      onSuccess();
+      return;
+    }
+    alert('Credenciales inválidas. Usa usuario: admin y contraseña: admin');
+  };
 
   const socialLogin = (provider: string) => {
     console.log(`Iniciando sesión con ${provider}`);
   };
 
-  const containerStyle: React.CSSProperties = {
+  const overlayStyle: React.CSSProperties = {
+    position: 'fixed',
+    inset: 0,
+    background: 'rgba(0,0,0,0.6)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 2000,
+  };
+
+  const containerStyle: React.CSSProperties = {
     maxWidth: '400px',
     margin: '50px auto',
     padding: '30px',
@@ -85,16 +95,24 @@ const LoginScreen: React.FC = () => {
     fontFamily: 'sans-serif'
   };
 
-  // 🛑 Lógica de renderizado condicional: si view es 'terms', muestra los términos.
+  if (!show) return null;
+
+  // 🛑 Lógica de renderizado condicional: si view es 'terms', muestra los términos dentro del overlay
   if (view === 'terms') {
-      // 🛑 CORRECCIÓN DE USO: Llama al componente renombrado
-      return <TerminosCondiciones onBack={() => setView('login')} />;
+      return (
+        <div style={overlayStyle}>
+          <div style={{ ...containerStyle, width: 'min(560px, 92vw)', maxHeight: '90vh', overflowY: 'auto' }}>
+            <TerminosCondiciones onBack={() => setView('login')} />
+          </div>
+        </div>
+      );
   }
 
 
   // Si view es 'login' (la vista por defecto), se renderiza todo el formulario:
-  return (
-    <div style={containerStyle}>
+  return (
+    <div style={overlayStyle}>
+      <div style={containerStyle}>
       <h2 style={{ color: '#000', marginBottom: '10px' }}>
         {activeTab === 'login' ? 'Iniciar sesión en TokTok' : 'Registrarse en TokTok'}
       </h2>
@@ -268,8 +286,8 @@ const LoginScreen: React.FC = () => {
           </span>
       </div>
       
-      {/* Footer para cambiar entre Login y Registro */}
-      <div style={{ color: '#000', marginTop: '10px', fontSize: '14px', borderTop: '1px solid #f0f0f0', paddingTop: '20px', fontWeight: 'bold' }}>
+      {/* Footer para cambiar entre Login y Registro */}
+      <div style={{ color: '#000', marginTop: '10px', fontSize: '14px', borderTop: '1px solid #f0f0f0', paddingTop: '20px', fontWeight: 'bold' }}>
         <p>
           {activeTab === 'login' ? '¿No tienes una cuenta?' : '¿Ya tienes una cuenta?'}
           {' '}
@@ -285,7 +303,8 @@ const LoginScreen: React.FC = () => {
           </span>
         </p>
       </div>
-    </div>
+      </div>
+    </div>
   );
 };
 
