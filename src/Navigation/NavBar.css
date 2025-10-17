@@ -13,11 +13,22 @@
     overflow: hidden;            /* el contenedor no scrollea, lo hará el menú */
 }
 
+.brand {
+    width: 100%;
+    padding: 1rem 1.2rem 0.5rem 1.2rem;
+}
+.brand-mark {
+    font-size: 1.25rem;
+    font-weight: 800;
+    letter-spacing: 0.3px;
+    color: #fff;
+}
+
 .sidebar-nav {
     display: flex;
     flex-direction: column;
     width: 100%;
-    padding-top: 2rem;
+    padding-top: 0.5rem;
     border-bottom: none;
     flex: 1 1 auto;             /* ocupa todo el alto disponible */
     overflow-y: auto;            /* aquí vive el scroll del menú */
@@ -48,3 +59,23 @@
     background-color: var(--hover-bg);
     color: var(--accent);
 }
+.nav-link.active p, .nav-link.active .nav-icon { color: var(--accent); }
+.nav-link.active { background-color: rgba(100,108,255,0.1); }
+
+.nav-mini-link {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    text-align: left;
+    padding: 0.25rem 1.2rem;
+    cursor: pointer;
+    font-weight: 600;
+}
+.nav-mini-link:hover { color: var(--accent); }
+.nav-mini-note {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    padding: 0.2rem 1.2rem 0.6rem 1.2rem;
+}
+
+/* Footer antiguo eliminado: ahora usamos nav-mini-link y nav-mini-note bajo 'Más' */

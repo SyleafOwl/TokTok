@@ -11,7 +11,7 @@
   --card-bg: #000000;                /* fondo del video/card */
   --icon-circle-bg: #222222;         /* fondo de los botones redondos */
   --hover-bg: #efefef;               /* fondo hover en listas/botones */
-  --accent: #1de9b6;                 /* color acento (links/hover) */
+  --accent: #646cff;                 /* color acento (links/hover) */
   --on-card-text: #ffffff;           /* texto sobre el video/card */
   --on-card-secondary: #e0e0e0;      /* texto secundario sobre el card */
 
@@ -30,7 +30,7 @@
   --card-bg: #1a1a1a;
   --icon-circle-bg: #222222;
   --hover-bg: #222222;
-  --accent: #1de9b6;
+  --accent: #646cff;
   --on-card-text: #ffffff;
   --on-card-secondary: #d1d5db;
 }
@@ -75,7 +75,7 @@ button {
   transition: border-color 0.25s;
 }
 button:hover {
-  border-color: #646cff;
+  border-color: var(--accent);
 }
 button:focus,
 button:focus-visible {

@@ -18,7 +18,7 @@ const fotoKeitel = new URL("../assets/imagenes/Keitel.png", import.meta.url).hre
 
 const teamMembers = [
   { nombre: 'Jericko Espejo ', fotoUrl: fotoJericko }, 
-  { nombre: 'David Rengifo 2', fotoUrl: fotoDavid}, 
+  { nombre: 'David Rengifo', fotoUrl: fotoDavid}, 
   { nombre: 'Ian Cavero', fotoUrl: fotoLan }, 
   { nombre: 'Sebastian Chapman', fotoUrl: fotoChapman }, 
   { nombre: 'Keitel Hernández', fotoUrl: fotoKeitel }
