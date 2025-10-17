@@ -21,8 +21,8 @@ const App: React.FC = () => {
 
   return (
     <div style={{ display: 'flex', height: '100vh', width: '100vw', position: 'relative' }}>
-      <NavBar onNavigate={handleNavigate} current={page} />
-      <PerfilTopBar intis={intis} setIntis={setIntis} />
+  <NavBar onNavigate={handleNavigate} current={page} />
+  <PerfilTopBar intis={intis} setIntis={setIntis} onNavigate={handleNavigate} onLogout={() => { /* pendiente: cerrar sesión real */ }} />
       {page === 'home' && <Home />}
       {page === 'perfil' && (
         <div style={{ flex: 1, overflow: 'auto' }}>
