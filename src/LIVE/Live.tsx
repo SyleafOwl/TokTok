@@ -3,6 +3,7 @@ import './Live.css'
 import ComentariosPanel from '../Comentarios/ComentariosPanel'
 import RegalosPanel, { Regalo } from '../Regalos/RegalosPanel'
 import RegalosOverlay from '../Regalos/RegalosOverlay'
+import AnimacionGift, { type GiftToast } from '../Regalos/AnimacionGift'
 import { loadRegalos, saveRegalos, REGALOS_BASE } from '../Regalos/regalosStore'
 
 export type RolUsuario = 'viewer' | 'streamer'
@@ -36,6 +37,8 @@ const Live: React.FC<Props> = ({ usuario, rol = 'viewer' }) => {
   const contRef = useRef<HTMLDivElement>(null)
   const [modoEdicion, setModoEdicion] = useState<boolean>(false)
   const [verTodosPara, setVerTodosPara] = useState<number | null>(null)
+  // overlays de regalos por liveId
+  const [toastsByLive, setToastsByLive] = useState<Record<number, GiftToast[]>>({})
 
   // Solo el primer LIVE (user=Streamer1) puede editar regalos si el rol del usuario es streamer y usuario es 'Streamer1'
   const puedeEditar = (live: LiveItem) => rol === 'streamer' && usuario === 'Streamer1' && live.user === 'Streamer1'
@@ -60,7 +63,25 @@ const Live: React.FC<Props> = ({ usuario, rol = 'viewer' }) => {
   }
 
   const onEnviarRegalo = (liveId: number, g: Regalo) => {
-    alert(`Enviado ${g.emoji} ${g.name} (${g.cost} monedas) al LIVE #${liveId}`)
+    // Mostrar overlay animado al streamer reconociendo al viewer
+    const toast: GiftToast = {
+      id: `${Date.now()}_${Math.random().toString(36).slice(2,7)}`,
+      emoji: g.emoji,
+      name: g.name,
+      cost: g.cost,
+      from: usuario || 'anon'
+    }
+    setToastsByLive(prev => {
+      const curr = prev[liveId] ?? []
+      return { ...prev, [liveId]: [...curr, toast].slice(-3) } // mantener últimos 3
+    })
+    // retirar automáticamente luego de 3.2s
+    setTimeout(() => {
+      setToastsByLive(prev => {
+        const list = prev[liveId] ?? []
+        return { ...prev, [liveId]: list.filter(t => t.id !== toast.id) }
+      })
+    }, 3200)
     setOpenGiftFor(null)
   }
 
@@ -90,6 +111,10 @@ const Live: React.FC<Props> = ({ usuario, rol = 'viewer' }) => {
                 <div className="video-wrapper">
                   <video className="video-player" controls autoPlay muted loop src="/ruta-live.mp4" poster="/ruta-live.jpg" />
                 </div>
+                {/* overlays de regalos recibidos */}
+                {toastsByLive[live.id] && toastsByLive[live.id].length > 0 && (
+                  <AnimacionGift toasts={toastsByLive[live.id]} />
+                )}
                 <div className="video-info">
                   <h3 className="user">@{live.user} · {live.viewers} espectadores</h3>
                   <p className="description">{live.title}</p>

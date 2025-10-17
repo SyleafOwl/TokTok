@@ -1,0 +1,14 @@
+.gift-overlay-container { position: absolute; top: 16px; left: 16px; display: flex; flex-direction: column; gap: 10px; z-index: 5; pointer-events: none; }
+.gift-overlay-item { display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.6); color: #fff; border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; padding: 10px 12px; min-width: 220px; box-shadow: 0 10px 24px rgba(0,0,0,0.35); overflow: hidden; animation: gift-enter 300ms ease-out, gift-exit 400ms ease-in 2.8s forwards; }
+.gift-emoji { font-size: 26px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4)); animation: emoji-pop 600ms ease-out; }
+.gift-texts { display: flex; flex-direction: column; line-height: 1.05; }
+.gift-title { font-weight: 800; font-size: 14px; }
+.gift-sub { font-size: 12px; opacity: 0.9; }
+.gift-coins { margin-left: auto; font-weight: 800; color: #ffd54a; text-shadow: 0 1px 0 #000; }
+
+@keyframes gift-enter { from { transform: translateX(-12px); opacity: 0 } to { transform: translateX(0); opacity: 1 } }
+@keyframes gift-exit { to { transform: translateX(-12px); opacity: 0 } }
+@keyframes emoji-pop { 0% { transform: scale(0.6) rotate(-10deg) } 60% { transform: scale(1.15) rotate(8deg) } 100% { transform: scale(1) rotate(0deg) } }
+
+/* Optional: position variants */
+.gift-pos-top-center { left: 50%; transform: translateX(-50%); }

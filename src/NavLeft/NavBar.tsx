@@ -7,8 +7,8 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 type NavBarProps = {
-    onNavigate?: (to: 'home' | 'settings' | 'perfil' | 'nosotros' | 'live' | 'regalos') => void
-    current?: 'home' | 'settings' | 'perfil' | 'nosotros' | 'live' | 'regalos'
+    onNavigate?: (to: 'home' | 'settings' | 'perfil' | 'nosotros' | 'live' | 'regalos' | 'metricas') => void
+    current?: 'home' | 'settings' | 'perfil' | 'nosotros' | 'live' | 'regalos' | 'metricas'
 }
 
 const NavBar: React.FC<NavBarProps> = ({ onNavigate, current }) => {

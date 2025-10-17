@@ -8,14 +8,17 @@ import './PerfilTopBar.css'
 export interface PerfilTopBarProps {
   intis: number
   setIntis: React.Dispatch<React.SetStateAction<number>>
-  onNavigate?: (to: 'home' | 'settings' | 'perfil' | 'nosotros' | 'regalos') => void
+  onNavigate?: (to: 'home' | 'settings' | 'perfil' | 'nosotros' | 'regalos' | 'metricas') => void
   onLogout?: () => void
+  rol?: 'viewer' | 'streamer'
+  usuario?: string
 }
 
-const PerfilTopBar: React.FC<PerfilTopBarProps> = ({ intis, setIntis, onNavigate, onLogout }) => {
+const PerfilTopBar: React.FC<PerfilTopBarProps> = ({ intis, setIntis, onNavigate, onLogout, rol = 'viewer', usuario }) => {
   const [mostrarCompra, setMostrarCompra] = useState(false)
   const [menuAbierto, setMenuAbierto] = useState(false)
   const menuRef = useRef<HTMLDivElement | null>(null)
+  const [mostrarAvisoViewer, setMostrarAvisoViewer] = useState(false)
 
   const manejarCompra = (monto: number) => {
     setIntis((prev) => prev + monto)
@@ -76,11 +79,47 @@ const PerfilTopBar: React.FC<PerfilTopBarProps> = ({ intis, setIntis, onNavigate
 
       {menuAbierto && (
         <div ref={menuRef} className="perfil-menu" role="menu" aria-label="Menú de perfil">
-          <button className="perfil-menu__item" role="menuitem" onClick={() => { setMenuAbierto(false); onNavigate && onNavigate('perfil') }}>Ver tu perfil</button>
+          <button className="perfil-menu__item" role="menuitem" onClick={() => { setMenuAbierto(false); onNavigate && onNavigate('perfil') }}>Tu Perfil</button>
+          <button
+            className="perfil-menu__item"
+            role="menuitem"
+            onClick={() => {
+              setMenuAbierto(false)
+              if (rol === 'streamer') { onNavigate && onNavigate('metricas') }
+              else { setMostrarAvisoViewer(true) }
+            }}
+          >
+            Métricas
+          </button>
           <button className="perfil-menu__item" role="menuitem" onClick={() => { setMenuAbierto(false); onNavigate && onNavigate('settings') }}>Opciones</button>
-          <button className="perfil-menu__item" role="menuitem" onClick={() => { setMenuAbierto(false); onNavigate && onNavigate('regalos') }}>Regalos</button>
+          <button
+            className="perfil-menu__item"
+            role="menuitem"
+            onClick={() => {
+              setMenuAbierto(false)
+              if (rol === 'streamer') {
+                onNavigate && onNavigate('regalos')
+              } else {
+                setMostrarAvisoViewer(true)
+              }
+            }}
+          >
+            Tus Regalos
+          </button>
           <div className="perfil-menu__separator"/>
           <button className="perfil-menu__item perfil-menu__danger" role="menuitem" onClick={() => { setMenuAbierto(false); onLogout && onLogout() }}>Cerrar sesión</button>
+        </div>
+      )}
+
+      {mostrarAvisoViewer && (
+        <div className="perfil-guard-overlay" role="dialog" aria-label="Solo Streamers">
+          <div className="perfil-guard-modal">
+            <h4>¡Solamente para Streamers!</h4>
+            <p>Esta sección es exclusiva para cuentas de Streamer.</p>
+            <div className="perfil-guard-actions">
+              <button className="perfil-menu__item" onClick={() => setMostrarAvisoViewer(false)}>Entendido</button>
+            </div>
+          </div>
         </div>
       )}
     </div>
