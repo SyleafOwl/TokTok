@@ -3,16 +3,19 @@
 :root {
   --comments-panel-width: 380px;
   --comments-panel-gap: 12px;
-  --comments-panel-z: 80;
+  /* Debe estar por debajo del PerfilTopBar (z-index: 60) para no taparlo */
+  --comments-panel-z: 40;
   --comments-header-h: 56px;
+  /* Deja espacio para el PerfilTopBar (NavRight) en la parte superior */
+  --comments-panel-top: 64px;
 }
 
 /* Panel fijo a la derecha */
 .comments-panel {
   position: fixed;
-  top: 0;
+  top: var(--comments-panel-top);
   right: 0;
-  height: 100vh;
+  height: calc(100vh - var(--comments-panel-top));
   width: var(--comments-panel-width);
   background: var(--sidebar-bg);
   color: var(--text-primary);
@@ -20,7 +23,8 @@
   box-shadow: -8px 0 24px rgba(0,0,0,0.35);
   display: flex;
   flex-direction: column;
-  z-index: var(--comments-panel-z);
+  /* Forzar que el panel quede detrás de PerfilTopBar, Regalos y Modales */
+  z-index: 1 !important;
 }
 
 .comments-header {
@@ -77,6 +81,12 @@
 .comment-author {
   font-weight: 700;
   margin-bottom: 2px;
+}
+.comment-level {
+  margin-left: 6px;
+  font-size: 11px;
+  font-weight: 800;
+  color: #ffd54a;
 }
 
 .comment-text {

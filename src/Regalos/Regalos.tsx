@@ -73,10 +73,10 @@ const RegalosPage: React.FC<Props> = ({ usuario, rol }) => {
               {edit && canEdit ? (
                 <>
                   <input className="regalo-cost-input" type="number" min={0} value={g.cost} onChange={(e) => setCosto(g.id, Math.max(0, Number(e.target.value)))} />
-                  <span className="regalo-cost">monedas</span>
+                  <span className="regalo-cost">Intis</span>
                 </>
               ) : (
-                <div className="regalo-cost">{g.cost} monedas</div>
+                <div className="regalo-cost">{g.cost} Intis</div>
               )}
             </div>
           </div>

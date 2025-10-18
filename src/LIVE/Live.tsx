@@ -6,12 +6,15 @@ import RegalosOverlay from '../Regalos/RegalosOverlay'
 import AnimacionGift, { type GiftToast } from '../Regalos/AnimacionGift'
 import { loadRegalos, saveRegalos, REGALOS_BASE } from '../Regalos/regalosStore'
 import { addWatchSeconds } from '../Perfil/xpStore'
+import CompraIntis from '../Intis/CompraIntis'
 
 export type RolUsuario = 'viewer' | 'streamer'
 
 type Props = {
   usuario?: string
   rol?: RolUsuario
+  intis: number
+  setIntis: React.Dispatch<React.SetStateAction<number>>
 }
 
 // Regalos base vienen del store compartido
@@ -30,16 +33,16 @@ const LIVES_INICIALES: LiveItem[] = [
   { id: 3, user: 'GamerPro', title: 'Rankeds hoy 🔥', viewers: '3.7K', perfil: 'G' },
 ]
 
-const Live: React.FC<Props> = ({ usuario, rol = 'viewer' }) => {
+const Live: React.FC<Props> = ({ usuario, rol = 'viewer', intis, setIntis }) => {
   const [lives] = useState<LiveItem[]>(LIVES_INICIALES)
   const [regalos, setRegalos] = useState<Regalo[]>(REGALOS_BASE)
   const [openGiftFor, setOpenGiftFor] = useState<number | null>(null)
-  const [openCommentsFor, setOpenCommentsFor] = useState<number | null>(null)
   const contRef = useRef<HTMLDivElement>(null)
   const [modoEdicion, setModoEdicion] = useState<boolean>(false)
   const [verTodosPara, setVerTodosPara] = useState<number | null>(null)
   // overlays de regalos por liveId
   const [toastsByLive, setToastsByLive] = useState<Record<number, GiftToast[]>>({})
+  const [mostrarCompra, setMostrarCompra] = useState<boolean>(false)
 
   // Solo el primer LIVE (user=Streamer1) puede editar regalos si el rol del usuario es streamer y usuario es 'Streamer1'
   const puedeEditar = (live: LiveItem) => rol === 'streamer' && usuario === 'Streamer1' && live.user === 'Streamer1'
@@ -48,7 +51,7 @@ const Live: React.FC<Props> = ({ usuario, rol = 'viewer' }) => {
     // cargar regalos compartidos
     setRegalos(loadRegalos())
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') { setOpenGiftFor(null); setOpenCommentsFor(null); setVerTodosPara(null) }
+      if (e.key === 'Escape') { setOpenGiftFor(null); setVerTodosPara(null) }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
@@ -65,14 +68,17 @@ const Live: React.FC<Props> = ({ usuario, rol = 'viewer' }) => {
 
   const toggleGift = (id: number) => {
     setOpenGiftFor((curr) => (curr === id ? null : id))
-    setOpenCommentsFor(null)
-  }
-  const toggleComments = (id: number) => {
-    setOpenCommentsFor((curr) => (curr === id ? null : id))
-    setOpenGiftFor(null)
+    
   }
 
   const onEnviarRegalo = (liveId: number, g: Regalo) => {
+    // Verificar saldo de Intis
+    if (intis < g.cost) {
+      setMostrarCompra(true)
+      return
+    }
+    // Descontar saldo
+    setIntis((prev) => prev - g.cost)
     // Mostrar overlay animado al streamer reconociendo al viewer
     const toast: GiftToast = {
       id: `${Date.now()}_${Math.random().toString(36).slice(2,7)}`,
@@ -111,8 +117,13 @@ const Live: React.FC<Props> = ({ usuario, rol = 'viewer' }) => {
   }
 
   return (
+    <>
     <div className="tiktok-container">
       <div className="main-content">
+        {/** Panel de comentarios fijo a la derecha, siempre visible para el LIVE activo */}
+        {(() => { const activeLiveId = lives[0]?.id ?? 1; return (
+          <ComentariosPanel videoId={activeLiveId} onClose={() => {}} usuario={usuario || ''} />
+        ) })()}
         <div className="video-container" ref={contRef}>
           {lives.map((live) => (
             <div key={live.id} className="feed-item">
@@ -141,10 +152,6 @@ const Live: React.FC<Props> = ({ usuario, rol = 'viewer' }) => {
                   <div className="action-item">
                     <div className="icon">❤️</div>
                     <span className="count">99K</span>
-                  </div>
-                  <div className="action-item">
-                    <div className="icon" onClick={() => toggleComments(live.id)}>💬</div>
-                    <span className="count">5K</span>
                   </div>
                   <div className="action-item">
                     <div className="icon">🔄</div>
@@ -193,12 +200,18 @@ const Live: React.FC<Props> = ({ usuario, rol = 'viewer' }) => {
             </div>
           ))}
         </div>
-
-        {openCommentsFor !== null && (
-          <ComentariosPanel videoId={openCommentsFor} onClose={() => setOpenCommentsFor(null)} />
-        )}
       </div>
     </div>
+    {/** Modal de compra de Intis si saldo insuficiente */}
+    <CompraIntis
+      abierto={mostrarCompra}
+      onCerrar={() => setMostrarCompra(false)}
+      onComprar={(monto) => {
+        setIntis((prev) => prev + monto)
+        setMostrarCompra(false)
+      }}
+    />
+    </>
   )
 }
 

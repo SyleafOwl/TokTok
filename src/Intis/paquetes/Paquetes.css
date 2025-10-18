@@ -8,7 +8,9 @@
 }
 
 .paquete-box {
-  background: #fff;
+  background: var(--card-bg);
+  color: var(--text-primary);
+  border: 1px solid rgba(255,255,255,0.08);
   border-radius: 1rem;
   box-shadow: 0 0.5rem 2rem rgba(0,0,0,0.10);
   padding: 1.2rem 0.5rem;
@@ -18,20 +20,21 @@
   justify-content: center;
   font-weight: 600;
   font-size: 1.1rem;
-  transition: box-shadow 0.2s, transform 0.15s, background 0.2s;
+  transition: box-shadow 0.2s, transform 0.15s, background 0.2s, border-color 0.2s;
   cursor: pointer;
 }
 
 .paquete-box:hover {
   box-shadow: 0 0.5rem 2rem rgba(0,0,0,0.18);
   transform: translateY(-2px) scale(1.04);
-  background: #f0f8ff;
+  background: rgba(255,255,255,0.04);
+  border-color: rgba(255,255,255,0.16);
 }
 
 .paquete-box svg {
   font-size: 2.2rem;
   margin-bottom: 0.5rem;
-  color: #25F4EE;
+  color: var(--accent);
 }
 
 .paquete-box:nth-child(2) svg {

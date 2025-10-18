@@ -93,10 +93,10 @@ const RegalosPanel: React.FC<Props> = ({
                       onCambiarCosto && onCambiarCosto(g.id, Math.max(0, Number(e.target.value)))
                     }
                   />
-                  <span className="gift-cost-sufijo">monedas</span>
+                  <span className="gift-cost-sufijo">Intis</span>
                 </>
               ) : (
-                <span className="gift-cost">{g.cost} monedas</span>
+                <span className="gift-cost">{g.cost} Intis</span>
               )}
             </div>
           </div>

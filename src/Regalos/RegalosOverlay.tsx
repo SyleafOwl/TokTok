@@ -53,10 +53,10 @@ const RegalosOverlay: React.FC<Props> = ({
                 <>
                   <input className="allgifts-cost" type="number" min={0} value={g.cost}
                          onChange={(e) => onCambiarCosto && onCambiarCosto(g.id, Math.max(0, Number(e.target.value)))} />
-                  <span className="allgifts-cost-sufijo">monedas</span>
+                  <span className="allgifts-cost-sufijo">Intis</span>
                 </>
               ) : (
-                <span className="allgifts-costlabel">{g.cost} monedas</span>
+                <span className="allgifts-costlabel">{g.cost} Intis</span>
               )}
             </div>
           </div>

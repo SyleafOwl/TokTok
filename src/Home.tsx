@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import './Home.css';
 import ComentariosPanel from './Comentarios/ComentariosPanel';
 import RegalosPanel, { Regalo } from './Regalos/RegalosPanel';
+import CompraIntis from './Intis/CompraIntis';
 
 // Hola, todos estos comentarios si estan hecho con IA para explicar el codigo
 // y ayudar a entender la logica detras de cada parte.
@@ -10,7 +11,7 @@ import RegalosPanel, { Regalo } from './Regalos/RegalosPanel';
 // Estructura de un regalo y lista por defecto.
 // - emoji: lo que se muestra
 // - name: nombre del regalo
-// - cost: coste ficticio en "monedas" (sin lógica aún)
+// - cost: coste ficticio en "Intis" (sin lógica aún)
 type Gift = Regalo;
 const GIFTS: Gift[] = [
 	{ id: 'owl', emoji: '🦉', name: 'Búho', cost: 5 },
@@ -37,7 +38,12 @@ const getMoreVideos = (startId: number, count = 2) => {
 
 const initialVideos: any[] = getMoreVideos(1, 2);
 
-const TokTokHome: React.FC = () => {
+type HomeProps = {
+	intis: number
+	setIntis: React.Dispatch<React.SetStateAction<number>>
+}
+
+const TokTokHome: React.FC<HomeProps> = ({ intis, setIntis }) => {
 	const [videos, setVideos] = useState(initialVideos);
 	const [loading, setLoading] = useState(false);
 	const videoContainerRef = useRef<HTMLDivElement>(null);
@@ -46,6 +52,8 @@ const TokTokHome: React.FC = () => {
 	// ID del video cuyo panel de comentarios está abierto (o null si ninguno)
 	const [openCommentsFor, setOpenCommentsFor] = useState<number | null>(null);
 	// Ya no es necesario cargar los primeros videos en useEffect
+	// Modal de compra cuando no hay suficientes Intis
+	const [mostrarCompra, setMostrarCompra] = useState(false);
 
 	useEffect(() => {
 		const handleScroll = () => {
@@ -105,10 +113,16 @@ const TokTokHome: React.FC = () => {
 	};
 
 	// Maneja el envío de un regalo (por ahora solo muestra un mensaje).
-	// Aquí en el futuro se integrará la lógica de monedas / pagos / animaciones.
+	// Aquí en el futuro se integrará la lógica de Intis / pagos / animaciones.
 	const handleSendGift = (videoId: number, gift: Gift) => {
-		alert(`Enviado ${gift.emoji} ${gift.name} (coste: ${gift.cost} monedas) al video #${videoId}`);
-		setOpenGiftFor(null);
+			if (intis >= gift.cost) {
+				setIntis((prev) => prev - gift.cost);
+				// En el futuro: animaciones/toast de regalo aquí
+				setOpenGiftFor(null);
+			} else {
+				// Abrir modal de compra si no alcanza
+				setMostrarCompra(true);
+			}
 	};
 
 	// Abre/cierra el panel de comentarios para un video específico
@@ -205,6 +219,16 @@ const TokTokHome: React.FC = () => {
 						onClose={() => setOpenCommentsFor(null)}
 					/>
 				)}
+
+        {/* Modal de compra de Intis si saldo insuficiente */}
+        <CompraIntis
+          abierto={mostrarCompra}
+          onCerrar={() => setMostrarCompra(false)}
+          onComprar={(monto) => {
+            setIntis((prev) => prev + monto);
+            setMostrarCompra(false);
+          }}
+        />
 			</div>
 		</div>
 	);

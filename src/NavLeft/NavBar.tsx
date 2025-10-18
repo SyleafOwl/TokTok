@@ -3,15 +3,18 @@ import HomeIcon from '@mui/icons-material/Home';
 import ExploreIcon from '@mui/icons-material/Explore';
 import FollowTheSignsIcon from '@mui/icons-material/FollowTheSigns';
 import LiveTvIcon from '@mui/icons-material/LiveTv';
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+type PageKeyNav = 'home' | 'settings' | 'perfil' | 'nosotros' | 'live' | 'regalos' | 'metricas' | 'terminos' | 'crear' | 'mascota'
 type NavBarProps = {
-    onNavigate?: (to: 'home' | 'settings' | 'perfil' | 'nosotros' | 'live' | 'regalos' | 'metricas') => void
-    current?: 'home' | 'settings' | 'perfil' | 'nosotros' | 'live' | 'regalos' | 'metricas'
+    onNavigate?: (to: PageKeyNav) => void
+    current?: PageKeyNav
+    usuario?: string
+    rol?: 'viewer' | 'streamer'
 }
 
-const NavBar: React.FC<NavBarProps> = ({ onNavigate, current }) => {
+const NavBar: React.FC<NavBarProps> = ({ onNavigate, current, rol }) => {
     return (
         <div className="contenedor-navbar">
             <div className="brand">
@@ -42,12 +45,19 @@ const NavBar: React.FC<NavBarProps> = ({ onNavigate, current }) => {
                     </div>
                     <p>LIVE</p>
                 </div>
-                <div className={`nav-link ${current === 'home' ? '' : ''}`}> {/* placeholder para Cargar */}
+                <div className={`nav-link ${current === 'crear' ? 'active' : ''}`} onClick={() => onNavigate && onNavigate('crear')}>
                     <div className="nav-icon">
-                        <CloudUploadIcon/>
+                        <AddCircleIcon/>
                     </div>
-                    <p>Cargar</p>
+                    <p>Crear</p>
                 </div>
+                    {/* MASCOTA */}
+                    <div className={`nav-link ${current === 'mascota' ? 'active' : ''}`} onClick={() => onNavigate && onNavigate('mascota')}>
+                        <div className="nav-icon">
+                            <span role="img" aria-label="Mascota">🐾</span>
+                        </div>
+                        <p>Mascota</p>
+                    </div>
                 <div className={`nav-link ${current === 'perfil' ? 'active' : ''}`} onClick={() => onNavigate && onNavigate('perfil')}>
                     <div className="nav-icon">
                         <AccountCircleIcon/>
@@ -60,8 +70,9 @@ const NavBar: React.FC<NavBarProps> = ({ onNavigate, current }) => {
                     </div>
                     <p>Más</p>
                 </div>
-                {/* Insertar Quienes Somos y PW2025-2 justo debajo de Más */}
+                {/* Insertar Quienes Somos y Términos justo debajo de Más */}
                 <button className="nav-mini-link" onClick={() => onNavigate && onNavigate('nosotros')}>Quiénes Somos</button>
+                <button className="nav-mini-link" onClick={() => onNavigate && onNavigate('terminos')}>Términos y Condiciones</button>
                 {/* Acceso directo opcional a Regalos */}
                 {/* <button className="nav-mini-link" onClick={() => onNavigate && onNavigate('regalos')}>Regalos</button> */}
                 <div className="nav-mini-note">PW2025-2</div>

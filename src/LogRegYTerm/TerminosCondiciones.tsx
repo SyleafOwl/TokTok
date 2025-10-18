@@ -40,7 +40,7 @@ const TermsAndConditions: React.FC<TermsProps> = ({ onBack }) => {
       <p>TokTok se reserva el derecho de modificar estos Términos en cualquier momento. Le notificaremos cualquier cambio sustancial publicando los términos revisados en la plataforma. Su uso continuado después de las modificaciones constituye su aceptación de los nuevos términos.</p>
       <h3 style={{ marginTop: '20px', color: '#333' }}>6. Contacto</h3>
       <p>Si tiene preguntas sobre estos Términos, contáctenos a través de nuestro soporte en línea.</p>
-      <button onClick={onBack} style={buttonStyle}>Regresar al Login</button>
+      <button onClick={onBack} style={buttonStyle}>Regresar</button>
     </div>
   );
 };
