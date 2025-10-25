@@ -1,6 +1,7 @@
 // src/Settings.tsx
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import './Settings.css';
+import { getUserProfile, UserProfile } from '../Perfil/userStore';
 
 
 interface SettingsProps {
@@ -9,6 +10,8 @@ interface SettingsProps {
 }
 
 const Settings: React.FC<SettingsProps> = ({ onBack, onLogout }) => {
+  const [profile, setProfile] = useState<UserProfile | null>(null)
+  useEffect(() => { setProfile(getUserProfile()) }, [])
   return (
     <div className="settings-container">
       <header className="settings-header">
@@ -17,6 +20,13 @@ const Settings: React.FC<SettingsProps> = ({ onBack, onLogout }) => {
       </header>
 
       <div className="settings-content">
+        <div className="settings-section">
+          <h2>Tu información</h2>
+          <div className="settings-item"><span>Perfil</span><span>{profile?.username || '—'}</span></div>
+          <div className="settings-item"><span>Usuario</span><span>{profile?.username || '—'}</span></div>
+          <div className="settings-item"><span>Correo/Teléfono</span><span>{profile?.contact || '—'}</span></div>
+          <div className="settings-item"><span>Tipo de usuario</span><span>{profile?.role === 'streamer' ? 'Streamer' : profile?.role === 'viewer' ? 'Viewer' : '—'}</span></div>
+        </div>
     
         <div className="settings-section">
           <h2>Apariencia</h2>

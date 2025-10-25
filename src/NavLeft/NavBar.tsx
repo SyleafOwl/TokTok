@@ -5,7 +5,6 @@ import FollowTheSignsIcon from '@mui/icons-material/FollowTheSigns';
 import LiveTvIcon from '@mui/icons-material/LiveTv';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 type PageKeyNav = 'home' | 'settings' | 'perfil' | 'nosotros' | 'live' | 'regalos' | 'metricas' | 'terminos' | 'crear' | 'mascota'
 type NavBarProps = {
     onNavigate?: (to: PageKeyNav) => void
@@ -64,12 +63,7 @@ const NavBar: React.FC<NavBarProps> = ({ onNavigate, current, rol }) => {
                     </div>
                     <p>Perfil</p>
                 </div>
-                <div className={`nav-link ${current === 'settings' ? 'active' : ''}`} onClick={() => onNavigate && onNavigate('settings')}>
-                    <div className="nav-icon">
-                        <MoreHorizIcon/>
-                    </div>
-                    <p>Más</p>
-                </div>
+                {/* Botón "Más" eliminado por optimización */}
                 {/* Insertar Quienes Somos y Términos justo debajo de Más */}
                 <button className="nav-mini-link" onClick={() => onNavigate && onNavigate('nosotros')}>Quiénes Somos</button>
                 <button className="nav-mini-link" onClick={() => onNavigate && onNavigate('terminos')}>Términos y Condiciones</button>

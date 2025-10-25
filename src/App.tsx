@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react'
+import { clearUserProfile } from './Perfil/userStore'
 import NavBar from './NavLeft/NavBar'
 import Home from './Home'
 import PerfilPage from './Perfil/Perfil'
@@ -27,16 +28,15 @@ const App: React.FC = () => {
     setPage(to)
   }, [])
 
-  // Logout: refresca la página para limpiar estado rápido
+  // Logout: limpia perfil básico y refresca la página
   const handleLogout = useCallback(() => {
     try {
-      // Limpiar cualquier storage simple si hiciera falta
-      // localStorage.clear(); // opcional: comenta si no quieres borrar todo
+      clearUserProfile()
     } catch {}
     window.location.reload()
   }, [])
 
-  // Handler de login simple: admin/admin => viewer, Streamer1/1234 => streamer
+  // Handler de login simple: recibe usuario y rol desde LoginScreen
   const handleLoginSuccess = (username: string, role: 'viewer' | 'streamer') => {
     setUsuario(username)
     setRol(role)
