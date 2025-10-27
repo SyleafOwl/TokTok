@@ -31,6 +31,16 @@
   border-color: rgba(255,255,255,0.16);
 }
 
+.paquete-box.selected {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  box-shadow: 0 0.6rem 2.2rem rgba(0,0,0,0.28);
+}
+.paquete-box.selected svg {
+  color: #fff !important;
+}
+
 .paquete-box svg {
   font-size: 2.2rem;
   margin-bottom: 0.5rem;

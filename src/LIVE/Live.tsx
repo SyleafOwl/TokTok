@@ -210,6 +210,7 @@ const Live: React.FC<Props> = ({ usuario, rol = 'viewer', intis, setIntis }) => 
         setIntis((prev) => prev + monto)
         setMostrarCompra(false)
       }}
+      saldo={intis}
     />
     </>
   )

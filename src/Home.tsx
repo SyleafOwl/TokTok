@@ -221,13 +221,14 @@ const TokTokHome: React.FC<HomeProps> = ({ intis, setIntis }) => {
 				)}
 
         {/* Modal de compra de Intis si saldo insuficiente */}
-        <CompraIntis
+				<CompraIntis
           abierto={mostrarCompra}
           onCerrar={() => setMostrarCompra(false)}
           onComprar={(monto) => {
             setIntis((prev) => prev + monto);
             setMostrarCompra(false);
           }}
+					saldo={intis}
         />
 			</div>
 		</div>

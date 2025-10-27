@@ -91,6 +91,7 @@ const PerfilTopBar: React.FC<PerfilTopBarProps> = ({ intis, setIntis, onNavigate
         abierto={mostrarCompra}
         onCerrar={() => setMostrarCompra(false)}
         onComprar={manejarCompra}
+        saldo={intis}
       />
 
       {menuAbierto && (
