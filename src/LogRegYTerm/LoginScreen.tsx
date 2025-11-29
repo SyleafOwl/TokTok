@@ -1,4 +1,5 @@
 import React, { useRef, useState } from 'react'
+import { ingresar, storage, Rol } from '../api'
 import { saveUserProfile } from '../Perfil/userStore'
 import Nosotros from '../Nosotros/Nosotros'
 import TermsAndConditions from './TerminosCondiciones'
@@ -60,16 +61,30 @@ const LoginScreen: React.FC<Props> = ({ show = true, onSuccess, onLoginCustom })
   const [loginUsername, setLoginUsername] = useState('')
   const [loginPassword, setLoginPassword] = useState('')
   const [selectedRole, setSelectedRole] = useState<null | 'streamer' | 'viewer'>(null)
+  const [loading, setLoading] = useState(false)
   if (!show) return null
 
-  const handleRegister = () => {
+  const handleRegister = async () => {
     const uname = username.trim()
     if (!uname) { alert('Por favor, ingresa tu Nombre de Usuario.'); return }
     if (!selectedRole) { alert('Selecciona tu Rol: Streamer o Viewer.'); return }
-    // Nota: password no se valida (sin backend), es solo UI
-    saveUserProfile({ username: uname, contact: contact.trim() || undefined, role: selectedRole })
-    onLoginCustom && onLoginCustom(uname, selectedRole)
-    onSuccess()
+    // Autenticación con backend: mapear roles
+    const rolBackend: Rol = selectedRole === 'streamer' ? 'creador' : 'visitante'
+    try {
+      setLoading(true)
+      const { token, persona } = await ingresar(uname, rolBackend)
+      storage.setToken(token)
+      storage.setPersona(persona)
+      saveUserProfile({ username: uname, contact: contact.trim() || undefined, role: selectedRole })
+      onLoginCustom && onLoginCustom(uname, selectedRole)
+      onSuccess()
+      // Refrescar para que toda la app lea estado
+      setTimeout(() => window.location.reload(), 100)
+    } catch (err: any) {
+      alert(err?.message || 'Error al ingresar')
+    } finally {
+      setLoading(false)
+    }
   }
 
   const loginNotImplemented = () => alert('El Login aún no está implementado (sin base de datos).')
@@ -124,7 +139,7 @@ const LoginScreen: React.FC<Props> = ({ show = true, onSuccess, onLoginCustom })
             </div>
 
             {/* Botón Registrar */}
-            <button onClick={handleRegister} style={{ width: '100%', marginTop: 14, padding: 12, borderRadius: 10, border: 'none', background: 'var(--accent)', color: '#fff', fontWeight: 800, cursor: 'pointer' }}>Registrar</button>
+            <button onClick={handleRegister} disabled={loading} style={{ width: '100%', marginTop: 14, padding: 12, borderRadius: 10, border: 'none', background: 'var(--accent)', color: '#fff', fontWeight: 800, cursor: 'pointer' }}>{loading ? 'Procesando...' : 'Registrar'}</button>
 
             {/* Separador */}
             <div style={{ height: 1, background: 'rgba(255,255,255,0.12)', margin: '14px 0' }} />

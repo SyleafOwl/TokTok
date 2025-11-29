@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { storage } from '../api'
 import GeneratingTokensIcon from '@mui/icons-material/GeneratingTokens'
 import PhoneAndroidIcon from '@mui/icons-material/PhoneAndroid'
 import AccountCircleIcon from '@mui/icons-material/AccountCircle'
@@ -60,6 +61,9 @@ const PerfilTopBar: React.FC<PerfilTopBarProps> = ({ intis, setIntis, onNavigate
     return () => clearInterval(id)
   }, [menuAbierto, rol, usuario])
 
+  const persona = storage.getPersona()
+  const isAuth = !!storage.getToken()
+
   return (
     <div className="perfil-topbar-container" role="banner">
       <div className="perfil-topbar">
@@ -98,7 +102,7 @@ const PerfilTopBar: React.FC<PerfilTopBarProps> = ({ intis, setIntis, onNavigate
         <div ref={menuRef} className="perfil-menu" role="menu" aria-label="Menú de perfil">
           {/* Encabezado con nombre de usuario y progreso (solo viewer) */}
           <div className="perfil-menu__header">
-            <div className="perfil-menu__user">{usuario ? `@${usuario}` : 'Invitado'}</div>
+            <div className="perfil-menu__user">{persona ? `@${persona.nombre}` : (usuario ? `@${usuario}` : 'Invitado')}</div>
             {rol === 'viewer' && (
               <div className="perfil-menu__xp">
                 <div className="perfil-menu__xpbar"><span style={{ width: `${xpPct}%` }}/></div>
@@ -134,7 +138,7 @@ const PerfilTopBar: React.FC<PerfilTopBarProps> = ({ intis, setIntis, onNavigate
             Tus Regalos
           </button>
           <div className="perfil-menu__separator"/>
-          <button className="perfil-menu__item perfil-menu__danger" role="menuitem" onClick={() => { setMenuAbierto(false); onLogout && onLogout() }}>Cerrar sesión</button>
+          <button className="perfil-menu__item perfil-menu__danger" role="menuitem" onClick={() => { setMenuAbierto(false); storage.clear(); onLogout && onLogout(); setTimeout(() => window.location.reload(), 100) }}>Cerrar sesión</button>
         </div>
       )}
 
