@@ -69,10 +69,12 @@ const LoginScreen: React.FC<Props> = ({ show = true, onSuccess, onLoginCustom })
     if (!uname) { alert('Por favor, ingresa tu Nombre de Usuario.'); return }
     if (!password.trim()) { alert('Ingresa una Contraseña.'); return }
     if (!selectedRole) { alert('Selecciona tu Rol: Streamer o Viewer.'); return }
-    // Rol exactamente 'viewer' | 'streamer'
-    const rolBackend: Rol = selectedRole
+    // Rol exactamente 'viewer' | 'streamer' (normaliza por si hubiera valores antiguos como 'creador')
+    const rolBackend: Rol = ((selectedRole as any) === 'creador' ? 'streamer' : selectedRole) as Rol
     try {
       setLoading(true)
+      // Log mínimo para depurar (se oculta la contraseña)
+      try { console.info('Registrando usuario:', { nombre: uname, rol: rolBackend, password: '***', contacto: contact.trim() || undefined }) } catch {}
       const { token, persona } = await registrar(uname, rolBackend, password.trim(), contact.trim() || undefined)
       storage.setToken(token)
       storage.setPersona(persona)
