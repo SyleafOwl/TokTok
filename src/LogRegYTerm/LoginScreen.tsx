@@ -74,7 +74,7 @@ const LoginScreen: React.FC<Props> = ({ show = true, onSuccess, onLoginCustom })
     try {
       setLoading(true)
       // Log mínimo para depurar (se oculta la contraseña)
-      try { console.info('Registrando usuario:', { nombre: uname, rol: rolBackend, password: '***', contacto: contact.trim() || undefined }) } catch {}
+      try { console.info('Registrando usuario:', { usuario: uname, rol: rolBackend, clave: '***', correo: contact.trim() || undefined }) } catch {}
       const { token, persona } = await registrar(uname, rolBackend, password.trim(), contact.trim() || undefined)
       storage.setToken(token)
       storage.setPersona(persona)

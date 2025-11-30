@@ -43,6 +43,7 @@ function safePreview(bodyStr: string) {
     if (obj && typeof obj === 'object') {
       if ('password' in obj) obj.password = '***';
       if ('contrasena' in obj) obj.contrasena = '***';
+      if ('clave' in obj) (obj as any).clave = '***';
     }
     return JSON.stringify(obj);
   } catch { return bodyStr }
@@ -58,10 +59,11 @@ export interface AuthResponse { token: string; persona: Persona }
 
 // Registro de usuario nuevo (no login)
 export async function registrar(nombre: string, rol: Rol, password: string, contacto?: string): Promise<AuthResponse> {
-  // Normalizar rol defensivamente y enviar ambas claves de contraseña por compatibilidad
+  // Normalizar rol defensivamente y usar las claves solicitadas por el usuario
   const rolNorm = (rol as any) === 'creador' ? 'streamer' : rol;
-  const body: any = { nombre, rol: rolNorm, password, contrasena: password };
-  if (contacto !== undefined) body.contacto = contacto;
+  // Mapeo: Usuario, Correo, Clave, Rol
+  const body: any = { usuario: nombre, correo: contacto, clave: password, rol: rolNorm };
+  // Nota: eliminamos 'password', 'contrasena' y cualquier campo no usado
   const resp = await request('/api/autenticacion/registrar', {
     method: 'POST',
     body: JSON.stringify(body),
@@ -71,8 +73,8 @@ export async function registrar(nombre: string, rol: Rol, password: string, cont
 
 // Login de usuario registrado
 export async function loguear(nombre: string, password: string): Promise<AuthResponse> {
-  // Enviar ambas variantes de contraseña por compatibilidad
-  const body = { nombre, password, contrasena: password } as any;
+  // Login: Usuario y Clave
+  const body = { usuario: nombre, clave: password } as any;
   const resp = await request('/api/autenticacion/ingresar', {
     method: 'POST',
     body: JSON.stringify(body),
