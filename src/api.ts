@@ -1,14 +1,16 @@
 // Cliente API mínimo para TokTok-Backend
 // Usa únicamente la variable de entorno Vite VITE_API_URL
 
-const ENV_API = (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_API_URL) || ''
-export const BASE_URL = ENV_API;
+function getBaseUrl(): string {
+  return 'https://toktok-backend-ytga.onrender.com';
+}
 
 async function request(path: string, options: RequestInit = {}) {
-  if (!BASE_URL) {
-    throw new Error('VITE_API_URL no está configurada. Define VITE_API_URL en .env');
+  const base = getBaseUrl()
+  if (!base) {
+    throw new Error('VITE_API_URL no está configurada. Define VITE_API_URL en .env (o setea window.__TOKTOK_API_URL__ o localStorage("toktok_api_url"))');
   }
-  const url = `${BASE_URL}${path}`;
+  const url = `${base}${path}`;
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
