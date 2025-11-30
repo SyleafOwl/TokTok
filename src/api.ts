@@ -1,13 +1,13 @@
-// Minimal API client for TokTok-Backend
-// Chooses BASE_URL based on environment (localhost vs GitHub Pages)
+// Cliente API mínimo para TokTok-Backend
+// Usa únicamente la variable de entorno Vite VITE_API_URL
 
-const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
-// Permite configurar el backend en producción vía variable de entorno Vite
-const ENV_BASE = (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_BACKEND_URL) || ''
-const PROD_BASE = ENV_BASE || 'https://<tu-backend-en-render>'; // Reemplaza cuando tengas tu dominio
-export const BASE_URL = isLocal ? 'http://localhost:3000' : PROD_BASE;
+const ENV_API = (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_API_URL) || ''
+export const BASE_URL = ENV_API;
 
 async function request(path: string, options: RequestInit = {}) {
+  if (!BASE_URL) {
+    throw new Error('VITE_API_URL no está configurada. Define VITE_API_URL en .env');
+  }
   const url = `${BASE_URL}${path}`;
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
