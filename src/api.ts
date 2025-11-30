@@ -11,8 +11,13 @@ async function request(path: string, options: RequestInit = {}) {
   const url = `${BASE_URL}${path}`;
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
+    'Accept': 'application/json',
     ...(options.headers as Record<string, string> || {}),
   };
+  try { 
+    const preview = typeof options.body === 'string' ? options.body : undefined;
+    console.info('[TokTok API] →', { url, method: (options.method||'GET'), headers, body: preview ? safePreview(preview) : undefined });
+  } catch {}
   const res = await fetch(url, { ...options, headers });
   const text = await res.text();
   let data: any;
@@ -23,9 +28,22 @@ async function request(path: string, options: RequestInit = {}) {
   }
   if (!res.ok) {
     const message = data?.message || res.statusText;
+    try { console.warn('[TokTok API] ← error', { status: res.status, message, data }); } catch {}
     throw new Error(message);
   }
+  try { console.info('[TokTok API] ← ok', { status: res.status, data }); } catch {}
   return data;
+}
+
+function safePreview(bodyStr: string) {
+  try {
+    const obj = JSON.parse(bodyStr);
+    if (obj && typeof obj === 'object') {
+      if ('password' in obj) obj.password = '***';
+      if ('contrasena' in obj) obj.contrasena = '***';
+    }
+    return JSON.stringify(obj);
+  } catch { return bodyStr }
 }
 
 export type Rol = 'viewer' | 'streamer';
@@ -38,7 +56,10 @@ export interface AuthResponse { token: string; persona: Persona }
 
 // Registro de usuario nuevo (no login)
 export async function registrar(nombre: string, rol: Rol, password: string, contacto?: string): Promise<AuthResponse> {
-  const body = { nombre, rol, password, contacto };
+  // Normalizar rol defensivamente y enviar ambas claves de contraseña por compatibilidad
+  const rolNorm = (rol as any) === 'creador' ? 'streamer' : rol;
+  const body: any = { nombre, rol: rolNorm, password, contrasena: password };
+  if (contacto !== undefined) body.contacto = contacto;
   const resp = await request('/api/autenticacion/registrar', {
     method: 'POST',
     body: JSON.stringify(body),
@@ -48,7 +69,8 @@ export async function registrar(nombre: string, rol: Rol, password: string, cont
 
 // Login de usuario registrado
 export async function loguear(nombre: string, password: string): Promise<AuthResponse> {
-  const body = { nombre, password };
+  // Enviar ambas variantes de contraseña por compatibilidad
+  const body = { nombre, password, contrasena: password } as any;
   const resp = await request('/api/autenticacion/ingresar', {
     method: 'POST',
     body: JSON.stringify(body),
