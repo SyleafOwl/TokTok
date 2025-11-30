@@ -72,7 +72,7 @@ const LoginScreen: React.FC<Props> = ({ show = true, onSuccess, onLoginCustom })
     const rolBackend: Rol = selectedRole === 'streamer' ? 'creador' : 'visitante'
     try {
       setLoading(true)
-      const { token, persona } = await registrar(uname, rolBackend)
+      const { token, persona } = await registrar(uname, rolBackend, password.trim(), contact.trim() || undefined)
       storage.setToken(token)
       storage.setPersona(persona)
       saveUserProfile({ username: uname, contact: contact.trim() || undefined, role: selectedRole })

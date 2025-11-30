@@ -34,14 +34,11 @@ export interface Persona {
   nombre: string;
   rol: Rol;
 }
-
-export async function salud() {
-  return request('/api/salud');
-}
+export interface AuthResponse { token: string; persona: Persona }
 
 // Registro de usuario nuevo (no login)
-export async function registrar(nombre: string, rol: Rol): Promise<{ token: string; persona: Persona; }> {
-  const body = { nombre, rol };
+export async function registrar(nombre: string, rol: Rol, password: string, contacto?: string): Promise<AuthResponse> {
+  const body = { nombre, rol, password, contacto };
   const resp = await request('/api/autenticacion/registrar', {
     method: 'POST',
     body: JSON.stringify(body),
@@ -49,26 +46,17 @@ export async function registrar(nombre: string, rol: Rol): Promise<{ token: stri
   return resp;
 }
 
-export async function listarPersonas(limite = 10, cursor?: string): Promise<{ personas: Persona[]; siguienteCursor?: string; }> {
-  const qp = new URLSearchParams();
-  qp.set('limite', String(limite));
-  if (cursor) qp.set('cursor', cursor);
-  return request(`/api/personas?${qp.toString()}`);
-}
-
-export async function obtenerPersona(id: string): Promise<Persona> {
-  return request(`/api/personas/${id}`);
-}
-
-export async function crearPersona(nombre: string, rol: Rol, token: string): Promise<Persona> {
-  return request('/api/personas', {
+// Login de usuario registrado
+export async function loguear(nombre: string, password: string): Promise<AuthResponse> {
+  const body = { nombre, password };
+  const resp = await request('/api/autenticacion/ingresar', {
     method: 'POST',
-    body: JSON.stringify({ nombre, rol }),
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    body: JSON.stringify(body),
   });
+  return resp;
 }
+
+// Otras APIs se conectarán más adelante; mantenemos solo auth + storage por ahora.
 
 export const storage = {
   getToken(): string | null { return localStorage.getItem('toktok_token'); },
