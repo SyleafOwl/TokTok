@@ -28,7 +28,7 @@ async function request(path: string, options: RequestInit = {}) {
   return data;
 }
 
-export type Rol = 'visitante' | 'creador';
+export type Rol = 'viewer' | 'streamer';
 export interface Persona {
   id: string;
   nombre: string;
