@@ -81,8 +81,6 @@ const LoginScreen: React.FC<Props> = ({ show = true, onSuccess, onLoginCustom })
       saveUserProfile({ username: uname, contact: contact.trim() || undefined, role: selectedRole })
       onLoginCustom && onLoginCustom(uname, selectedRole)
       onSuccess()
-      // Refrescar para que toda la app lea estado
-      setTimeout(() => window.location.reload(), 100)
     } catch (err: any) {
       alert(err?.message || 'Error al registrar')
     } finally {
@@ -103,7 +101,6 @@ const LoginScreen: React.FC<Props> = ({ show = true, onSuccess, onLoginCustom })
       const rol = (persona.rol === 'streamer' ? 'streamer' : 'viewer') as 'viewer' | 'streamer'
       onLoginCustom && onLoginCustom(uname, rol)
       onSuccess()
-      setTimeout(() => window.location.reload(), 100)
     } catch (err: any) {
       alert(err?.message || 'Error al iniciar sesión')
     } finally {
