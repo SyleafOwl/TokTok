@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react'
-import { ingresar, storage, Rol } from '../api'
+import { registrar, storage, Rol } from '../api'
 import { saveUserProfile } from '../Perfil/userStore'
 import Nosotros from '../Nosotros/Nosotros'
 import TermsAndConditions from './TerminosCondiciones'
@@ -72,7 +72,7 @@ const LoginScreen: React.FC<Props> = ({ show = true, onSuccess, onLoginCustom })
     const rolBackend: Rol = selectedRole === 'streamer' ? 'creador' : 'visitante'
     try {
       setLoading(true)
-      const { token, persona } = await ingresar(uname, rolBackend)
+      const { token, persona } = await registrar(uname, rolBackend)
       storage.setToken(token)
       storage.setPersona(persona)
       saveUserProfile({ username: uname, contact: contact.trim() || undefined, role: selectedRole })
@@ -81,7 +81,7 @@ const LoginScreen: React.FC<Props> = ({ show = true, onSuccess, onLoginCustom })
       // Refrescar para que toda la app lea estado
       setTimeout(() => window.location.reload(), 100)
     } catch (err: any) {
-      alert(err?.message || 'Error al ingresar')
+      alert(err?.message || 'Error al registrar')
     } finally {
       setLoading(false)
     }

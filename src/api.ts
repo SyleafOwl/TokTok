@@ -39,9 +39,10 @@ export async function salud() {
   return request('/api/salud');
 }
 
-export async function ingresar(nombre: string, rol: Rol): Promise<{ token: string; persona: Persona; }> {
+// Registro de usuario nuevo (no login)
+export async function registrar(nombre: string, rol: Rol): Promise<{ token: string; persona: Persona; }> {
   const body = { nombre, rol };
-  const resp = await request('/api/autenticacion/ingresar', {
+  const resp = await request('/api/autenticacion/registrar', {
     method: 'POST',
     body: JSON.stringify(body),
   });
