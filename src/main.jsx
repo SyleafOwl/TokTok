@@ -8,9 +8,11 @@ import { BrowserRouter } from 'react-router-dom'
 // Activar modo oscuro por defecto
 document.body.classList.add('theme-dark')
 
+const basename = import.meta.env.BASE_URL || '/'
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <BrowserRouter basename="/TokTok-Frontend">
+    <BrowserRouter basename={basename}>
       <App />
     </BrowserRouter>
   </StrictMode>,

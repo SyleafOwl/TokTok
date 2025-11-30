@@ -28,6 +28,8 @@ jobs:
       - name: Build
         env:
           VITE_API_URL: ${{ secrets.VITE_API_URL }}
+          # Opcional: forzar base si deseas un valor distinto al nombre del repo
+          # VITE_BASE_PATH: /Toktok/
         run: npm run build
 
       - name: Upload artifact
