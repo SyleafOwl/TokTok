@@ -24,16 +24,15 @@ const StreamerProgress: React.FC<Props> = ({ totalMs }) => {
         }
     }
 
-    // Calcular porcentaje de barra
+    
     const progress = Math.min(100, ((totalHours - prevThreshold) / (nextThreshold - prevThreshold)) * 100);
     const hoursLeft = Math.max(0, nextThreshold - totalHours).toFixed(1);
 
-    // Notificación de subida de nivel (Simulada con un useEffect)
+    
     useEffect(() => {
-        // Si acabamos de cargar y estamos justo en el borde, podríamos mostrar un toast
-        // En una app real, compararías con el nivel anterior guardado en DB
+        
         if (progress === 0 && totalHours > 0) {
-            // alert(`¡Felicidades! Has subido al Nivel de Streamer ${currentLevel}`);
+            
         }
     }, [currentLevel]);
 
