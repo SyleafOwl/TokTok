@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import './Metricas.css'
-import { getUserMetrics, getAllMetrics, startSession, stopSession, formatDuration, type UserMetrics } from './metricasStore'
+import { getUserMetrics, getAllMetrics, startSession, stopSession, formatDuration, syncMetricsFromBackend, type UserMetrics } from './metricasStore'
 import StreamerProgress from './StreamerProgress'
 import ConfigNiveles from '../Settings/ConfigNiveles'
 import LevelUpModal from './LevelUpModal'
@@ -28,12 +28,22 @@ const MetricasPage: React.FC<Props> = ({ usuario = '', rol = 'viewer' }) => {
     setOthers(getAllMetrics().filter(m => m.user !== usuario))
   }
 
-  useEffect(() => { refresh() }, [usuario])
+  useEffect(() => {
+    refresh()
+    // Sincronizar con backend si está disponible
+    if (usuario && canUse) {
+      syncMetricsFromBackend(usuario).then(() => refresh())
+    }
+  }, [usuario, canUse])
 
   const active = !!mine?.activeSessionId
 
   const onStart = () => { if (!canUse) return; startSession(usuario!); refresh() }
-  const onStop  = () => { if (!canUse) return; stopSession(usuario!); refresh() }
+  const onStop  = async () => {
+    if (!canUse) return
+    await stopSession(usuario!)
+    refresh()
+  }
 
   // CALCULAR NIVEL ACTUAL (Lógica copiada de StreamerProgress para tenerla aquí)
   const totalMs = mine?.totalMs ?? 0
