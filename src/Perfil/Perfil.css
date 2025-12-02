@@ -7,6 +7,29 @@
     display: block;
 }
 
+.btn-estadisticas{
+    border: 1px solid #FE2C55;
+    color: #FE2C55;
+    background: transparent;
+    padding: 0.45rem 0.75rem;
+    border-radius: 6px;
+    font-weight: 600;
+    transition: background-color .18s ease, color .18s ease, transform .08s ease, box-shadow .18s ease;
+}
+
+.btn-estadisticas:hover{
+    background: #FE2C55;
+    color: #ffffff;
+    border-color: #ffffff !important;
+    box-shadow: 0 8px 20px rgba(254,44,85,0.14);
+    transform: translateY(-2px);
+}
+
+.btn-estadisticas:active{
+    transform: translateY(0);
+    box-shadow: none;
+}
+
 .foto-container{
     padding:4px;
     border-radius: 50%;
