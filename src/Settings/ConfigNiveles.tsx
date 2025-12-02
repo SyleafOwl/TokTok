@@ -12,10 +12,9 @@ const ConfigNiveles: React.FC<Props> = ({ onBack, usuario }) => {
     const [rules, setRules] = useState<LevelRule[]>([]);
     const [loading, setLoading] = useState(false);
 
-    // Cargar reglas actuales (Simulado o desde Backend)
+    
     useEffect(() => {
-        // Aquí iría el fetch a tu backend: fetch(`/api/config/levels/${usuario}`)
-        // Por ahora simulamos datos iniciales:
+        
         setRules([
             { level: 1, points: 100 },
             { level: 2, points: 250 },

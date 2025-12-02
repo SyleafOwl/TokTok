@@ -14,7 +14,7 @@ const Settings: React.FC<SettingsProps> = ({ onBack, onLogout }) => {
   const [subPage, setSubPage] = useState<'main' | 'niveles'>('main');
 
   useEffect(() => { setProfile(getUserProfile()) }, [])
-// SI ESTAMOS EN LA SUB-PÁGINA DE NIVELES, MOSTRAMOS ESE COMPONENTE
+
   if (subPage === 'niveles') {
       return <ConfigNiveles onBack={() => setSubPage('main')} usuario={profile?.username || ''} />;
   }
@@ -35,7 +35,7 @@ const Settings: React.FC<SettingsProps> = ({ onBack, onLogout }) => {
           <div className="settings-item"><span>Tipo de usuario</span><span>{profile?.role === 'streamer' ? 'Streamer' : profile?.role === 'viewer' ? 'Viewer' : '—'}</span></div>
         </div>
 
-        {/* --- NUEVA SECCIÓN: COMUNIDAD (Solo para Streamers) --- */}
+        {}
         {profile?.role === 'streamer' && (
             <div className="settings-section">
                 <h2>Comunidad y Gamificación</h2>
