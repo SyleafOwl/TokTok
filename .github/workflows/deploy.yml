@@ -13,6 +13,8 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      VITE_API_URL: ${{ secrets.VITE_API_URL }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -21,13 +23,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+          cache: 'npm'
 
       - name: Install deps
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
       - name: Build
-        env:
-          VITE_API_URL: ${{ secrets.VITE_API_URL }}
         run: npm run build
 
       - name: Upload artifact
