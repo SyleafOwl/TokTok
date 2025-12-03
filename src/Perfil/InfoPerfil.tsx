@@ -51,7 +51,7 @@ const InfoPerfil = ({usuario, nombre,estadisticas,bio, esCreador, onEstadisticas
 
             {esCreador&& (
                 <button
-                    className="bton btn-outline-line-light mt-3"
+                    className="bton btn-outline-line-light mt-3 btn-estadisticas"
                     onClick={onEstadisticasClick}
                 >
                     <i className="bi bi-bar-chart-line-fill me-2"></i>
