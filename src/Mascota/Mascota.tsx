@@ -1,14 +1,15 @@
 import React from 'react'
 import './Mascota.css'
 import { getUserXP, addPoints } from '../Perfil/xpStore'
-import { feedPet, getPet } from './mascotaStore'
+import { feedPet, getPet, getPetRemote, PetState } from './mascotaStore'
 
 const PET_IMG = 'https://preview.redd.it/z1gd2kwa4a361.jpg?width=1080&crop=smart&auto=webp&s=f0be45d17874f0dd0437eca0032b596cb66951db'
 
 type Props = { usuario?: string }
 
 const Mascota: React.FC<Props> = ({ usuario = '' }) => {
-  const [pet, setPet] = React.useState(() => getPet(usuario || 'anon'))
+  // usar cache local inmediato y luego reemplazar con la versión remota cuando llegue
+  const [pet, setPet] = React.useState<PetState>(() => getPet(usuario || 'anon'))
   const [pct, setPct] = React.useState(0)
   const [feeding, setFeeding] = React.useState(false)
   const [showNoPoints, setShowNoPoints] = React.useState(false)
@@ -18,7 +19,18 @@ const Mascota: React.FC<Props> = ({ usuario = '' }) => {
 
   React.useEffect(() => {
     if (!usuario) return
-    setPet(getPet(usuario))
+    const ctrl = new AbortController()
+    ;(async () => {
+      try {
+        const remote = await getPetRemote(usuario, ctrl.signal)
+        setPet(remote)
+      } catch (err) {
+        if ((err as any)?.name === 'AbortError') return
+        // already handled by getPetRemote fallback — optionally log
+        console.warn('pet load failed', err)
+      }
+    })()
+    return () => { ctrl.abort() }
   }, [usuario])
 
   React.useEffect(() => {
@@ -144,6 +156,6 @@ const Mascota: React.FC<Props> = ({ usuario = '' }) => {
 }
 
 // Confeti y boom
-function triggerBoom(this: void) {}
+// (placeholder removed — triggerBoom is declared above as a const)
 
 export default Mascota
