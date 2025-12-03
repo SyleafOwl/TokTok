@@ -75,34 +75,39 @@ export function startSession(user: string): UserMetrics {
   return m
 }
 
-export async function stopSession(user: string): Promise<UserMetrics> {
+export function stopSession(user: string): UserMetrics {
   const db = loadDB()
   const m = db[user] || { user, totalMs: 0, sessions: [] }
   if (!m.activeSessionId) return m
-  
+
   const idx = m.sessions.findIndex(s => s.id === m.activeSessionId)
   let durationMs = 0
-  
+
   if (idx >= 0 && !m.sessions[idx].end) {
     m.sessions[idx].end = Date.now()
     durationMs = Math.max(0, (m.sessions[idx].end! - m.sessions[idx].start))
     m.totalMs += durationMs
   }
-  
+
   m.activeSessionId = undefined
   db[user] = m
   saveDB(db)
-  
-  // Enviar al backend si está disponible
-  try {
-    const updated = await api.endStreamSession(user, durationMs)
-    // Actualizar desde backend para sincronizar nivel
-    db[user].totalMs = updated.totalMs
-    saveDB(db)
-  } catch (e) {
-    console.warn('[stopSession] Error enviando al backend:', e)
-  }
-  
+
+  // Enviar al backend si está disponible (fire-and-forget, no await)
+  api.endStreamSession(user, durationMs)
+    .then((updated) => {
+      try {
+        const db2 = loadDB()
+        if (db2[user]) {
+          db2[user].totalMs = updated.totalMs
+          saveDB(db2)
+        }
+      } catch (e) {
+        console.warn('[stopSession] Error actualizando local desde backend:', e)
+      }
+    })
+    .catch((e) => console.warn('[stopSession] Error enviando al backend:', e))
+
   return m
 }
 

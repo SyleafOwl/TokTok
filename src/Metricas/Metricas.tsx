@@ -1,9 +1,7 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import './Metricas.css'
-import { getUserMetrics, getAllMetrics, startSession, stopSession, formatDuration, syncMetricsFromBackend, type UserMetrics } from './metricasStore'
-import StreamerProgress from './StreamerProgress'
-import ConfigNiveles from '../Settings/ConfigNiveles'
-import LevelUpModal from './LevelUpModal'
+import { getUserMetrics, getAllMetrics, startSession, stopSession, formatDuration, type UserMetrics } from './metricasStore'
+import StreamerProgress from './StreamerProgress';
 
 type Rol = 'viewer' | 'streamer'
 
@@ -12,13 +10,6 @@ type Props = { usuario?: string; rol?: Rol }
 const MetricasPage: React.FC<Props> = ({ usuario = '', rol = 'viewer' }) => {
   const [mine, setMine] = useState<UserMetrics | null>(null)
   const [others, setOthers] = useState<UserMetrics[]>([])
-  
-  // Estado para controlar la visibilidad del modal de configuración
-  const [showConfig, setShowConfig] = useState(false)
-  
-  // NUEVO: Estado para saber el nivel anterior y mostrar modal
-  const [prevLevel, setPrevLevel] = useState(0)
-  const [showLevelUp, setShowLevelUp] = useState<number | null>(null)
 
   const canUse = rol === 'streamer' && !!usuario
   
@@ -28,44 +19,17 @@ const MetricasPage: React.FC<Props> = ({ usuario = '', rol = 'viewer' }) => {
     setOthers(getAllMetrics().filter(m => m.user !== usuario))
   }
 
-  useEffect(() => {
-    refresh()
-    // Sincronizar con backend si está disponible
-    if (usuario && canUse) {
-      syncMetricsFromBackend(usuario).then(() => refresh())
-    }
-  }, [usuario, canUse])
+  useEffect(() => { refresh() }, [usuario])
 
   const active = !!mine?.activeSessionId
 
   const onStart = () => { if (!canUse) return; startSession(usuario!); refresh() }
-  const onStop  = async () => {
-    if (!canUse) return
-    await stopSession(usuario!)
-    refresh()
-  }
-
-  // CALCULAR NIVEL ACTUAL (Lógica copiada de StreamerProgress para tenerla aquí)
-  const totalMs = mine?.totalMs ?? 0
-  const totalHours = totalMs / (1000 * 60 * 60)
-  const LEVELS = [0, 10, 50, 100, 250, 500, 1000]
-  let currentLevel = 0
-  for (let i = 0; i < LEVELS.length; i++) {
-    if (totalHours >= LEVELS[i]) currentLevel = i + 1
-  }
-
-  // EFECTO: Detectar subida de nivel
-  useEffect(() => {
-    if (currentLevel > prevLevel && prevLevel !== 0) {
-      setShowLevelUp(currentLevel) // Mostrar modal
-    }
-    setPrevLevel(currentLevel)
-  }, [currentLevel, prevLevel])
+  const onStop  = () => { if (!canUse) return; stopSession(usuario!); refresh() }
 
   return (
     <div className="metricas-page">
       <div className="metricas-header">
-        <div className="metricas-title">Panel de Streamer</div>
+        <div className="metricas-title">Métricas de LIVE</div>
         
         {canUse && (
           <div className="metricas-actions">
@@ -86,20 +50,6 @@ const MetricasPage: React.FC<Props> = ({ usuario = '', rol = 'viewer' }) => {
 
       {canUse && (
         <div className="metricas-grid">
-          {/* --- AQUÍ INSERTAMOS LA NUEVA TARJETA DE PROGRESO --- */}
-          <div style={{ gridColumn: '1 / -1' }}> {/* Que ocupe todo el ancho si usas grid */}
-            <StreamerProgress totalMs={mine?.totalMs ?? 0} />
-          </div>
-          {/* 2. BOTÓN DE CONFIGURACIÓN DE NIVELES (NUEVO) */}
-          <div style={{ gridColumn: '1 / -1', display: 'flex', justifyContent: 'flex-end', marginTop: '-10px', marginBottom: '10px' }}>
-              <button 
-                className="metricas-btn" 
-                style={{ backgroundColor: '#333', border: '1px solid #555', fontSize: '0.9rem' }}
-                onClick={() => setShowConfig(true)}>
-                  ⚙️ Configurar Niveles de Audiencia
-              </button>
-          </div>
-
           <section className="metricas-card">
             <h4>Tus métricas</h4>
             <div className="metricas-list">
@@ -133,30 +83,6 @@ const MetricasPage: React.FC<Props> = ({ usuario = '', rol = 'viewer' }) => {
             </div>
           </section>
         </div>
-      )}
-
-      {/* --- MODAL OVERLAY PARA CONFIGURACIÓN --- */}
-      {showConfig && (
-          <div style={{
-              position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-              backgroundColor: 'rgba(0,0,0,0.8)', zIndex: 9999,
-              display: 'flex', justifyContent: 'center', alignItems: 'center'
-          }}>
-              <div style={{ width: '100%', maxWidth: '500px' }}>
-                  <ConfigNiveles 
-                    usuario={usuario || ''} 
-                    onBack={() => setShowConfig(false)} 
-                  />
-              </div>
-          </div>
-      )}
-
-      {/* AGREGAR: EL MODAL DE LEVEL UP */}
-      {showLevelUp && (
-          <LevelUpModal 
-             level={showLevelUp} 
-             onClose={() => setShowLevelUp(null)} 
-          />
       )}
     </div>
   )
