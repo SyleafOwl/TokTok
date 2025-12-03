@@ -24,28 +24,41 @@ export function getPet(user: string): PetState {
 }
 
 /**
- * getPetRemote: intenta obtener la mascota desde /api/pets/:id.
- * - Si existe, mapea la respuesta a PetState y la guarda en localStorage.
- * - Si 404, intenta crearla vía POST /api/pets.
- * - Si falla, cae al getPet(local).
+ * createPetRemote: crea una mascota en /api/pets y guarda en cache local.
+ * Nota: el endpoint verifica size, hearts y userId; enviamos hearts=1 por defecto
+ * porque el endpoint actual rechaza valores falsy (0).
  */
+export async function createPetRemote(user: string, size = 1, hearts = 1, signal?: AbortSignal): Promise<PetState> {
+  if (!user) throw new Error('no-user')
+  const res = await fetch('/api/pets', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ size, hearts, userId: user }),
+    signal
+  })
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}))
+    throw new Error(body?.error ?? 'Error creando mascota en servidor')
+  }
+  const data = await res.json()
+  const pet: PetState = {
+    user,
+    size: typeof data.size === 'number' ? data.size : size,
+    hearts: typeof data.hearts === 'number' ? data.hearts : hearts,
+    lastFed: data.lastFed ?? undefined
+  }
+  const db = loadDB(); db[user] = pet; saveDB(db)
+  return pet
+}
+
 export async function getPetRemote(user: string, signal?: AbortSignal): Promise<PetState> {
   if (!user) return getPet(user)
   try {
     const url = `/api/pets/${encodeURIComponent(user)}`
     const res = await fetch(url, { signal })
     if (res.status === 404) {
-      const createRes = await fetch('/api/pets', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ size: 1, hearts: 0, userId: user }),
-        signal
-      })
-      if (!createRes.ok) throw new Error('No se pudo crear mascota en servidor')
-      const created = await createRes.json()
-      const pet: PetState = { user: user, size: created.size ?? 1, hearts: created.hearts ?? 0, lastFed: created.lastFed ?? undefined }
-      const db = loadDB(); db[user] = pet; saveDB(db)
-      return pet
+      const created = await createPetRemote(user, 1, 1, signal)
+      return created
     }
     if (!res.ok) throw new Error('Error al obtener mascota')
     const data = await res.json()
@@ -56,10 +69,7 @@ export async function getPetRemote(user: string, signal?: AbortSignal): Promise<
     const db = loadDB(); db[user] = pet; saveDB(db)
     return pet
   } catch (e) {
-    if ((e as any)?.name === 'AbortError') {
-      // request was cancelled — rethrow or return cached
-      throw e
-    }
+    if ((e as any)?.name === 'AbortError') throw e
     console.warn('getPetRemote fallo, usando cache local:', e)
     return getPet(user)
   }

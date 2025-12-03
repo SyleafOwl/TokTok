@@ -1,7 +1,7 @@
 import React from 'react'
 import './Mascota.css'
 import { getUserXP, addPoints } from '../Perfil/xpStore'
-import { feedPet, getPet, getPetRemote, PetState } from './mascotaStore'
+import { feedPet, getPet, getPetRemote, createPetRemote, PetState } from './mascotaStore'
 
 const PET_IMG = 'https://preview.redd.it/z1gd2kwa4a361.jpg?width=1080&crop=smart&auto=webp&s=f0be45d17874f0dd0437eca0032b596cb66951db'
 
@@ -15,6 +15,7 @@ const Mascota: React.FC<Props> = ({ usuario = '' }) => {
   const [showNoPoints, setShowNoPoints] = React.useState(false)
   const [showBoom, setShowBoom] = React.useState(false)
   const [lastMilestone, setLastMilestone] = React.useState<number>(() => Math.floor((getPet(usuario || 'anon').size) || 1))
+  const [creating, setCreating] = React.useState(false)
   const stageRef = React.useRef<HTMLDivElement>(null)
 
   React.useEffect(() => {
@@ -103,6 +104,21 @@ const Mascota: React.FC<Props> = ({ usuario = '' }) => {
     setTimeout(() => setFeeding(false), 460)
   }
 
+  const onCreatePet = async () => {
+    if (!usuario) return
+    setCreating(true)
+    try {
+      // enviamos hearts = 1 porque el endpoint requiere valores truthy
+      const created = await createPetRemote(usuario, 1, 1)
+      setPet(created)
+    } catch (err) {
+      console.warn('crear mascota falló', err)
+      // opcional: show UI feedback
+    } finally {
+      setCreating(false)
+    }
+  }
+
   const xp = usuario ? getUserXP(usuario) : { points: 0, level: 1, pct: 0, user: '', currBase: 0, nextBase: 100 }
   const scale = 0.8 + Math.min(1.2, pet.size) * 0.1
 
@@ -130,6 +146,14 @@ const Mascota: React.FC<Props> = ({ usuario = '' }) => {
           <button className="mascota-btn" onClick={() => onFeed(50)}>Dar 50 pts</button>
           <button className="mascota-btn" onClick={() => onFeed(100)}>Dar 100 pts</button>
           <button className="mascota-btn primary" onClick={() => onFeed(250)}>Banquete 250</button>
+          <button
+            className="mascota-btn"
+            onClick={onCreatePet}
+            disabled={!usuario || creating}
+            title={usuario ? 'Crear registro de mascota en servidor' : 'Necesitas un usuario'}
+          >
+            {creating ? 'Creando...' : 'Crear mascota'}
+          </button>
         </div>
       </div>
       {showNoPoints && (
