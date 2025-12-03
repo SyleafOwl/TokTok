@@ -17,6 +17,7 @@ const MetricasPage: React.FC<Props> = ({ usuario = '', rol = 'viewer' }) => {
   const [others, setOthers] = useState<UserMetrics[]>([])
   
   const [tiempoVisual, setTiempoVisual] = useState(0)
+  const [busy, setBusy] = useState(false)
 
   const canUse = rol === 'streamer' && !!usuario
 
@@ -33,6 +34,11 @@ const MetricasPage: React.FC<Props> = ({ usuario = '', rol = 'viewer' }) => {
   }
 
   useEffect(() => { refresh() }, [usuario])
+
+  useEffect(() => {
+    const id = setInterval(refresh, 5000)
+    return () => clearInterval(id)
+  }, [usuario])
 
   useEffect(() => {
     let intervalo: any = null
@@ -55,16 +61,49 @@ const MetricasPage: React.FC<Props> = ({ usuario = '', rol = 'viewer' }) => {
     return () => clearInterval(intervalo)
   }, [mine])
 
-  const onStart = () => { 
-    if (!canUse) return
-    startSession(usuario!) 
-    refresh() 
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      try {
+        if (canUse && mine?.activeSessionId) {
+          stopSession(usuario!)
+        }
+      } catch {}
+    }
+    const handleVisibility = () => {
+      if (!document.hidden) refresh()
+    }
+    window.addEventListener('beforeunload', handleBeforeUnload)
+    document.addEventListener('visibilitychange', handleVisibility)
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload)
+      document.removeEventListener('visibilitychange', handleVisibility)
+    }
+  }, [usuario, canUse, mine?.activeSessionId])
+
+  const onStart = async() => { 
+    if (!canUse || busy) return
+    setBusy(true)
+    try {
+      await startSession(usuario!)
+      refresh()
+    } catch (err) {
+      console.error('startSession failed', err)
+    } finally {
+      setBusy(false)
+    }
   }
 
-  const onStop = () => { 
-    if (!canUse) return
-    stopSession(usuario!) 
-    refresh() 
+  const onStop = async() => { 
+    if (!canUse || busy) return
+    setBusy(true)
+    try {
+      await stopSession(usuario!)
+      refresh()
+    } catch (err) {
+      console.error('stopSession failed', err)
+    } finally {
+      setBusy(false)
+    }
   }
 
   return (
@@ -75,12 +114,22 @@ const MetricasPage: React.FC<Props> = ({ usuario = '', rol = 'viewer' }) => {
         {canUse && (
           <div className="metricas-actions">
             {!mine?.activeSessionId ? (
-              <button className="metricas-btn" onClick={onStart} style={{ borderColor: '#4caf50', color: '#4caf50' }}>
-                Iniciar Transmisión
+              <button
+                className="metricas-btn"
+                onClick={onStart}
+                disabled={busy}
+                style={{ borderColor: '#4caf50', color: '#4caf50' }}
+              >
+                {busy ? 'Iniciando...' : 'Iniciar Transmisión'}
               </button>
             ) : (
-              <button className="metricas-btn" onClick={onStop} style={{ borderColor: '#f44336', color: '#f44336' }}>
-                Finalizar Transmisión
+              <button
+                className="metricas-btn"
+                onClick={onStop}
+                disabled={busy}
+                style={{ borderColor: '#FE2C55', color: '#FE2C55' }}
+              >
+                {busy ? 'Finalizando...' : 'Finalizar Transmisión'}
               </button>
             )}
           </div>
@@ -96,13 +145,13 @@ const MetricasPage: React.FC<Props> = ({ usuario = '', rol = 'viewer' }) => {
       {canUse && (
         <div className="metricas-grid">
           <section className="metricas-card">
-            <h4>Tus métricas</h4>
+            <h4>Tus métricas (Req. 29)</h4>
             <div className="metricas-list">
               
               <div className="metricas-row">
                 <span>Total acumulado</span>
                 <strong style={{ fontSize: '1.2em', color: mine?.activeSessionId ? '#4caf50' : 'inherit' }}>
-                {formatDuration(tiempoVisual)}
+                  {formatDuration(tiempoVisual)}
                 </strong>
               </div>
 
@@ -118,7 +167,6 @@ const MetricasPage: React.FC<Props> = ({ usuario = '', rol = 'viewer' }) => {
                 <span className="metricas-sub">{mine?.sessions.length ?? 0}</span>
               </div>
               
-              {/* Historial de sesiones */}
               {mine?.sessions.slice().reverse().slice(0, 8).map(s => (
                 <div key={s.id} className="metricas-row">
                   <span>{new Date(s.start).toLocaleString()}</span>
