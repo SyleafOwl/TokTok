@@ -9,6 +9,8 @@
 .metricas-list { display: flex; flex-direction: column; gap: 8px; }
 .metricas-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 10px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; }
 .metricas-sub { font-size: 12px; opacity: 0.8; }
+.metricas-actions { display: flex; align-items: center; gap: 12px; }
+.metricas-actions-inline { display: flex; align-items: center; gap: 8px; }
 @media (max-width: 900px) { .metricas-grid { grid-template-columns: 1fr; } }
 
 /* Estilos para el Modal de Nivel */
@@ -44,3 +46,72 @@
     from { transform: scale(0.5); opacity: 0; }
     to { transform: scale(1); opacity: 1; }
 }
+
+:root{
+    --tiktok-red: #FE2C55;
+    --pause-blue: #2D9CDB;
+}
+
+.metricas-actions .metricas-btn {
+    padding: 0.45rem 0.75rem;
+    border-radius: 6px;
+    font-weight: 600;
+    transition: background-color .18s ease, color .18s ease, transform .08s ease, box-shadow .18s ease, border-color .18s ease;
+    background: transparent;
+}
+
+.metricas-btn.btn-pausa{
+    border: 1px solid #1E90FF;
+    color: #1E90FF;
+    background: transparent;
+    padding: 0.45rem 0.75rem;
+    border-radius: 6px;
+    font-weight: 600;
+    transition: background-color .18s ease, color .18s ease, transform .08s ease, box-shadow .18s ease, border-color .18s ease;
+}
+.metricas-btn.btn-pausa:hover{
+    background: #1E90FF;
+    color: #ffffff;
+    border-color: #ffffff !important;
+    box-shadow: 0 8px 20px rgba(30,144,255,0.14);
+    transform: translateY(-2px);
+}
+.metricas-btn.btn-pausa:focus,
+.metricas-btn.btn-pausa:focus-visible{
+    outline: none;
+    box-shadow: 0 8px 20px rgba(30,144,255,0.14);
+    border-color: #ffffff !important;
+}
+
+.metricas-btn.btn-finalizar{
+    border: 1px solid #FE2C55 !important;
+    color: #FE2C55 !important;
+    background: transparent;
+    padding: 0.45rem 0.75rem;
+    border-radius: 6px;
+    font-weight: 600;
+    transition: background-color .18s ease, color .18s ease, transform .08s ease, box-shadow .18s ease, border-color .18s ease;
+}
+.metricas-btn.btn-finalizar:hover{
+    background: #FE2C55;
+    color: #ffffff;
+    border-color: #ffffff !important;
+    box-shadow: 0 8px 20px rgba(254,44,85,0.14);
+    transform: translateY(-2px);
+}
+.metricas-btn.btn-finalizar:focus,
+.metricas-btn.btn-finalizar:focus-visible{
+    outline: none;
+    box-shadow: 0 8px 20px rgba(254,44,85,0.14);
+    border-color: #ffffff !important;
+}
+
+.metricas-btn.btn-iniciar{
+    border: 1px solid #4caf50;
+    color: #4caf50;
+    background: transparent;
+    padding: 0.45rem 0.75rem;
+    border-radius: 6px;
+    font-weight: 600;
+}
+.metricas-btn[disabled]{ opacity: 0.7; pointer-events: none; }

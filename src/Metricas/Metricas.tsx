@@ -4,68 +4,81 @@ import {
   getUserMetrics, 
   getAllMetrics, 
   startSession, 
-  stopSession, 
-  formatDuration, 
+  stopSession,
+  pauseSession,  
+  resumeSession,
   UserMetrics 
 } from './metricasStore'
 
 type Rol = 'viewer' | 'streamer'
 type Props = { usuario?: string; rol?: Rol }
 
+function formatDuration(ms: number | undefined | null) {
+  const m = Math.max(0, Math.floor((ms || 0) / 1000))
+  const h = Math.floor(m / 3600)
+  const min = Math.floor((m % 3600) / 60)
+  const s = m % 60
+  return `${h.toString().padStart(2, '0')}:${min.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`
+}
+
 const MetricasPage: React.FC<Props> = ({ usuario = '', rol = 'viewer' }) => {
   const [mine, setMine] = useState<UserMetrics | null>(null)
   const [others, setOthers] = useState<UserMetrics[]>([])
-  
   const [tiempoVisual, setTiempoVisual] = useState(0)
   const [busy, setBusy] = useState(false)
 
   const canUse = rol === 'streamer' && !!usuario
 
   const refresh = () => {
-    if (usuario) {
-      const datosUsuario = getUserMetrics(usuario)
-      setMine(datosUsuario)
-      
-      if (!datosUsuario.activeSessionId) {
-        setTiempoVisual(datosUsuario.totalMs)
-      }
+    if (!usuario) {
+      setMine(null)
+      setOthers(getAllMetrics())
+      setTiempoVisual(0)
+      return
     }
+    const datosUsuario = getUserMetrics(usuario)
+    setMine(datosUsuario)
     setOthers(getAllMetrics().filter(m => m.user !== usuario))
+    // totalMs provided by store should already exclude paused time
+    setTiempoVisual(datosUsuario.totalMs || 0)
   }
 
   useEffect(() => { refresh() }, [usuario])
 
+  // periodic reconcile (every 5s)
   useEffect(() => {
     const id = setInterval(refresh, 5000)
     return () => clearInterval(id)
   }, [usuario])
 
+  // live visual counter: re-fetch metrics each second while active to avoid double-count
   useEffect(() => {
-    let intervalo: any = null
+    if (!usuario) return
+    let tickId: number | null = null
 
-    if (mine && mine.activeSessionId) {
-      const sesionActual = mine.sessions.find(s => s.id === mine.activeSessionId)
-      
-      if (sesionActual) {
-        intervalo = setInterval(() => {
-          const ahora = Date.now()
-          const tiempoTranscurridoEnEstaSesion = ahora - sesionActual.start
-          
-          setTiempoVisual(mine.totalMs + tiempoTranscurridoEnEstaSesion)
-        }, 1000)
-      }
-    } else if (mine) {
-      setTiempoVisual(mine.totalMs)
+    const updateTick = () => {
+      const datos = getUserMetrics(usuario)
+      setMine(datos)
+      setTiempoVisual(datos.totalMs || 0)
     }
 
-    return () => clearInterval(intervalo)
-  }, [mine])
+    if (mine && mine.activeSessionId) {
+      // start 1s tick to keep UI in sync with store (store knows pauses)
+      updateTick()
+      tickId = window.setInterval(updateTick, 1000)
+    }
+
+    return () => {
+      if (tickId) clearInterval(tickId)
+    }
+  }, [usuario, mine?.activeSessionId])
 
   useEffect(() => {
     const handleBeforeUnload = () => {
       try {
         if (canUse && mine?.activeSessionId) {
-          stopSession(usuario!)
+          // best-effort stop (non-await)
+          try { stopSession(usuario!) } catch {}
         }
       } catch {}
     }
@@ -106,6 +119,25 @@ const MetricasPage: React.FC<Props> = ({ usuario = '', rol = 'viewer' }) => {
     }
   }
 
+  const onTogglePause = async () => {
+    if (!canUse || busy || !mine?.activeSessionId) return
+    setBusy(true)
+    try {
+      const active = mine.sessions.find(s => s.id === mine.activeSessionId)
+      if (!active) return
+      if (active.paused) {
+        await resumeSession(usuario!)
+      } else {
+        await pauseSession(usuario!)
+      }
+      refresh()
+    } catch (err) {
+      console.error('togglePause failed', err)
+    } finally {
+      setBusy(false)
+    }
+  }
+
   return (
     <div className="metricas-page">
       <div className="metricas-header">
@@ -115,22 +147,30 @@ const MetricasPage: React.FC<Props> = ({ usuario = '', rol = 'viewer' }) => {
           <div className="metricas-actions">
             {!mine?.activeSessionId ? (
               <button
-                className="metricas-btn"
+                className="metricas-btn btn-iniciar"
                 onClick={onStart}
                 disabled={busy}
-                style={{ borderColor: '#4caf50', color: '#4caf50' }}
               >
                 {busy ? 'Iniciando...' : 'Iniciar Transmisión'}
               </button>
             ) : (
-              <button
-                className="metricas-btn"
-                onClick={onStop}
-                disabled={busy}
-                style={{ borderColor: '#FE2C55', color: '#FE2C55' }}
-              >
-                {busy ? 'Finalizando...' : 'Finalizar Transmisión'}
-              </button>
+              <div className='metricas-actions-inline'>
+                <button
+                  className="metricas-btn btn-pausa"
+                  onClick={onTogglePause}
+                  disabled={busy}
+                >
+                  {mine.sessions.find(s => s.id === mine.activeSessionId)?.paused ? 'Reanudar transmisión' : 'Pausar transmisión'}
+                </button>
+
+                <button
+                  className="metricas-btn btn-finalizar"
+                  onClick={onStop}
+                  disabled={busy}
+                >
+                  {busy ? 'Finalizando...' : 'Finalizar Transmisión'}
+                </button>
+              </div>
             )}
           </div>
         )}
@@ -145,7 +185,7 @@ const MetricasPage: React.FC<Props> = ({ usuario = '', rol = 'viewer' }) => {
       {canUse && (
         <div className="metricas-grid">
           <section className="metricas-card">
-            <h4>Tus métricas (Req. 29)</h4>
+            <h4>Tus métricas</h4>
             <div className="metricas-list">
               
               <div className="metricas-row">
@@ -171,7 +211,7 @@ const MetricasPage: React.FC<Props> = ({ usuario = '', rol = 'viewer' }) => {
                 <div key={s.id} className="metricas-row">
                   <span>{new Date(s.start).toLocaleString()}</span>
                   <span className="metricas-sub">
-                    {s.end ? formatDuration(s.end - s.start) : 'EN CURSO'}
+                    {s.end ? formatDuration(s.end - s.start - (s.pausedAccumMs || 0)) : (s.paused ? 'PAUSADA' : 'EN CURSO')}
                   </span>
                 </div>
               ))}
@@ -196,4 +236,4 @@ const MetricasPage: React.FC<Props> = ({ usuario = '', rol = 'viewer' }) => {
   )
 }
 
-export default MetricasPage 
+export default MetricasPage

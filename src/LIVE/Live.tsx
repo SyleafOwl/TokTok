@@ -7,6 +7,7 @@ import AnimacionGift, { type GiftToast } from '../Regalos/AnimacionGift'
 import { loadRegalos, saveRegalos, REGALOS_BASE } from '../Regalos/regalosStore'
 import { addWatchSeconds } from '../Perfil/xpStore'
 import CompraIntis from '../Intis/CompraIntis'
+import { getUserMetrics } from '../Metricas/metricasStore'
 
 export type RolUsuario = 'viewer' | 'streamer'
 
@@ -43,6 +44,9 @@ const Live: React.FC<Props> = ({ usuario, rol = 'viewer', intis, setIntis }) => 
   // overlays de regalos por liveId
   const [toastsByLive, setToastsByLive] = useState<Record<number, GiftToast[]>>({})
   const [mostrarCompra, setMostrarCompra] = useState<boolean>(false)
+  const [liveElapsed, setLiveElapsed] = useState<number>(0)
+  // Añadir estado para mostrar tiempo proveniente del store
+  const [storeLiveMs, setStoreLiveMs] = useState<number | null>(null)
 
   // Solo el primer LIVE (user=Streamer1) puede editar regalos si el rol del usuario es streamer y usuario es 'Streamer1'
   const puedeEditar = (live: LiveItem) => rol === 'streamer' && usuario === 'Streamer1' && live.user === 'Streamer1'
@@ -65,6 +69,57 @@ const Live: React.FC<Props> = ({ usuario, rol = 'viewer', intis, setIntis }) => 
     }, 1000)
     return () => clearInterval(id)
   }, [rol, usuario])
+
+  // dentro del componente Live (añadir efecto para leer el estado de metricasStore)
+  useEffect(() => {
+    if (!usuario) return // streamerUser = nombre/ID del streamer en Live.tsx
+    let tick: number | null = null
+
+    const update = () => {
+      const data = getUserMetrics(usuario)
+      // si hay sesión activa y está pausada, no avanzar el contador
+      const active = data.sessions?.find(s => s.id === data.activeSessionId)
+      if (!data.activeSessionId || active?.paused) {
+        setLiveElapsed(data.totalMs || 0) // muestra total sin avanzar
+      } else {
+        // si está activo y no pausado, calcular tiempo actual
+        const now = Date.now()
+        const base = data.totalMs || 0
+        const sess = active
+        const elapsedSession = (sess && !sess.end) ? (now - sess.start - (sess.pausedAccumMs || 0)) : 0
+        setLiveElapsed(base + elapsedSession)
+      }
+    }
+
+    update()
+    tick = window.setInterval(update, 1000)
+    return () => { if (tick) clearInterval(tick) }
+  }, [usuario])
+
+  // Reemplaza 'streamerUser' por la variable real que identifica al streamer en este componente
+  useEffect(() => {
+    const streamerId = usuario // <- substituir por la variable real (ej. usuario, streamer, user)
+    if (!streamerId) return
+    const tick = window.setInterval(() => {
+      const data = getUserMetrics(streamerId)
+      const active = data?.sessions?.find((s: any) => s.id === data.activeSessionId)
+      if (!data.activeSessionId || active?.paused) {
+        // sesión pausada o no hay sesión → no avanzar
+        setStoreLiveMs(data.totalMs || 0)
+      } else {
+        // sesión activa y no pausada → calcular en vivo
+        const now = Date.now()
+        const elapsedSession = active && !active.end ? (now - active.start - (active.pausedAccumMs || 0)) : 0
+        setStoreLiveMs((data.totalMs || 0) + elapsedSession)
+      }
+    }, 1000)
+
+    // actualización inmediata
+    const data0 = getUserMetrics(streamerId)
+    setStoreLiveMs(data0.totalMs || 0)
+
+    return () => clearInterval(tick)
+  }, [usuario])
 
   const toggleGift = (id: number) => {
     setOpenGiftFor((curr) => (curr === id ? null : id))
