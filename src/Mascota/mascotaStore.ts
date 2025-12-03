@@ -19,7 +19,7 @@ function saveDB(db: DB) { try { localStorage.setItem(KEY, JSON.stringify(db)) } 
 
 export function getPet(user: string): PetState {
   const db = loadDB()
-  if (!db[user]) db[user] = { user, size: 1, hearts: 0 }
+  if (!db[user]) db[user] = { user, size: 0, hearts: 0 } // inicializar en 0
   return db[user]
 }
 
@@ -37,8 +37,11 @@ export async function createPetRemote(user: string, size = 1, hearts = 1, signal
     signal
   })
   if (!res.ok) {
-    const body = await res.json().catch(() => ({}))
-    throw new Error(body?.error ?? 'Error creando mascota en servidor')
+    // intentar obtener texto/JSON para diagnóstico más claro
+    const text = await res.text().catch(() => '')
+    let msg = text
+    try { msg = JSON.parse(text)?.error ?? text } catch {}
+    throw new Error(msg || `Error creando mascota: ${res.status}`)
   }
   const data = await res.json()
   const pet: PetState = {

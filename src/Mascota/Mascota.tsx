@@ -14,7 +14,7 @@ const Mascota: React.FC<Props> = ({ usuario = '' }) => {
   const [feeding, setFeeding] = React.useState(false)
   const [showNoPoints, setShowNoPoints] = React.useState(false)
   const [showBoom, setShowBoom] = React.useState(false)
-  const [lastMilestone, setLastMilestone] = React.useState<number>(() => Math.floor((getPet(usuario || 'anon').size) || 1))
+  const [lastMilestone, setLastMilestone] = React.useState<number>(() => Math.floor((getPet(usuario || 'anon').size) || 0))
   const [creating, setCreating] = React.useState(false)
   const stageRef = React.useRef<HTMLDivElement>(null)
 
@@ -27,7 +27,6 @@ const Mascota: React.FC<Props> = ({ usuario = '' }) => {
         setPet(remote)
       } catch (err) {
         if ((err as any)?.name === 'AbortError') return
-        // already handled by getPetRemote fallback — optionally log
         console.warn('pet load failed', err)
       }
     })()
@@ -94,7 +93,6 @@ const Mascota: React.FC<Props> = ({ usuario = '' }) => {
     setPet(res.pet)
     setFeeding(true)
     spawnHearts(8)
-    // Celebración si cruza un umbral entero de tamaño
     const prev = Math.floor(prevSize)
     const now = Math.floor(res.pet.size)
     if (now > prev) {
@@ -108,12 +106,15 @@ const Mascota: React.FC<Props> = ({ usuario = '' }) => {
     if (!usuario) return
     setCreating(true)
     try {
-      // enviamos hearts = 1 porque el endpoint requiere valores truthy
+      // optimista: inicializamos inmediatamente en UI para evitar que botones se queden deshabilitados
+      const optimistic: PetState = { user: usuario, size: 1, hearts: 1 }
+      setPet(optimistic)
+      // el endpoint server exige values truthy; enviamos size=1, hearts=1 y usamos la respuesta real
       const created = await createPetRemote(usuario, 1, 1)
       setPet(created)
     } catch (err) {
-      console.warn('crear mascota falló', err)
-      // opcional: show UI feedback
+      console.warn('crear mascota falló:', err instanceof Error ? err.message : err)
+      // opcional: mostrar feedback al usuario
     } finally {
       setCreating(false)
     }
@@ -130,32 +131,34 @@ const Mascota: React.FC<Props> = ({ usuario = '' }) => {
           <div className="mascota-meta">@{usuario || 'invitado'} · Nivel {xp.level} · Puntos {xp.points}</div>
         </div>
         <div ref={stageRef} className="mascota-stage">
-          {showBoom && (
-            <div className="damn-burst" aria-live="polite">DAMN!</div>
-          )}
+          {showBoom && (<div className="damn-burst" aria-live="polite">DAMN!</div>)}
           <div className={`mascota-img ${feeding ? 'mascota-eat' : ''} ${showBoom ? 'mascota-boom' : ''}`} style={{ transform: `scale(${scale.toFixed(2)})` }}>
             <img src={PET_IMG} alt="Mascota" />
           </div>
         </div>
+
         <div className="mascota-stats">
           <div className="mascota-meta">Tamaño: {pet.size.toFixed(1)} · ❤ {pet.hearts}</div>
           <div className="mascota-bar" aria-label="Progreso XP"><span style={{ ['--pct' as any]: `${pct}%` }} /></div>
         </div>
+
         <div className="mascota-actions" role="group" aria-label="Alimentar mascota">
-          <button className="mascota-btn" onClick={() => onFeed(10)}>Dar 10 pts</button>
-          <button className="mascota-btn" onClick={() => onFeed(50)}>Dar 50 pts</button>
-          <button className="mascota-btn" onClick={() => onFeed(100)}>Dar 100 pts</button>
-          <button className="mascota-btn primary" onClick={() => onFeed(250)}>Banquete 250</button>
+          <button className="mascota-btn" onClick={() => onFeed(10)} disabled={!usuario}>Dar 10 pts</button>
+          <button className="mascota-btn" onClick={() => onFeed(50)} disabled={!usuario}>Dar 50 pts</button>
+          <button className="mascota-btn" onClick={() => onFeed(100)} disabled={!usuario}>Dar 100 pts</button>
+          <button className="mascota-btn primary" onClick={() => onFeed(250)} disabled={!usuario}>Banquete 250</button>
+
           <button
             className="mascota-btn"
             onClick={onCreatePet}
-            disabled={!usuario || creating}
+            disabled={!usuario || creating || pet.size > 0}
             title={usuario ? 'Crear registro de mascota en servidor' : 'Necesitas un usuario'}
           >
-            {creating ? 'Creando...' : 'Crear mascota'}
+            {creating ? 'Creando...' : (pet.size > 0 ? 'Mascota creada' : 'Crear mascota')}
           </button>
         </div>
       </div>
+
       {showNoPoints && (
         <div className="pet-overlay" role="dialog" aria-modal="true" aria-label="Puntos insuficientes">
           <div className="pet-modal">
@@ -178,8 +181,5 @@ const Mascota: React.FC<Props> = ({ usuario = '' }) => {
     </div>
   )
 }
-
-// Confeti y boom
-// (placeholder removed — triggerBoom is declared above as a const)
 
 export default Mascota
