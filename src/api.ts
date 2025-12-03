@@ -82,7 +82,133 @@ export async function loguear(nombre: string, password: string): Promise<AuthRes
   return resp;
 }
 
-// Otras APIs se conectarán más adelante; mantenemos solo auth + storage por ahora.
+// ---- MÉTRICAS DE STREAMER ----
+
+export interface StreamerMetrics {
+  id: string;
+  userId: string;
+  totalMs: number;
+  totalSessions: number;
+  currentLevel: number;
+  lastLevelUpAt?: string; // ISO DateTime o null
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface StreamSession {
+  id: string;
+  userId: string;
+  startTime: string; // ISO DateTime
+  endTime?: string; // ISO DateTime o null
+  durationMs: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AudienceLevel {
+  id: string;
+  userId: string;
+  level: number;
+  name: string;
+  description?: string;
+  viewPermissions?: Record<string, any>;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Gift {
+  id: string;
+  name: string;
+  emoji: string;
+  coins: number;
+  receiverId: string;
+  senderId?: string;
+  streamSessionId?: string;
+  message?: string;
+  quantity: number;
+  createdAt: string;
+}
+
+export interface Comment {
+  id: string;
+  userId: string;
+  content: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Obtener métricas del streamer
+export async function getStreamerMetrics(userId: string): Promise<StreamerMetrics> {
+  return request(`/api/metrics/${userId}`, { method: 'GET' });
+}
+
+// Finalizar sesión de transmisión: actualiza totalMs, totalSessions y detecta level-up
+export async function endStreamSession(userId: string, durationMs: number): Promise<StreamerMetrics> {
+  return request(`/api/metrics/${userId}/session-end`, {
+    method: 'POST',
+    body: JSON.stringify({ durationMs }),
+  });
+}
+
+// Recalcular métricas desde todas las StreamSession del usuario
+export async function recalculateMetrics(userId: string): Promise<StreamerMetrics> {
+  return request(`/api/metrics/${userId}/recalculate`, {
+    method: 'POST',
+    body: JSON.stringify({}),
+  });
+}
+
+// Crear una nueva sesión de transmisión
+export async function startStreamSession(userId: string): Promise<StreamSession> {
+  return request(`/api/stream-session`, {
+    method: 'POST',
+    body: JSON.stringify({ userId, startTime: new Date().toISOString() }),
+  });
+}
+
+// Obtener todas las sesiones de un streamer
+export async function getStreamSessions(userId: string): Promise<StreamSession[]> {
+  return request(`/api/stream-session/${userId}`, { method: 'GET' });
+}
+
+// Configurar niveles de audiencia para un streamer
+export async function setAudienceLevel(userId: string, level: number, name: string, description?: string, viewPermissions?: Record<string, any>): Promise<AudienceLevel> {
+  return request(`/api/audience-level`, {
+    method: 'POST',
+    body: JSON.stringify({ userId, level, name, description, viewPermissions }),
+  });
+}
+
+// Obtener niveles de audiencia de un streamer
+export async function getAudienceLevels(userId: string): Promise<AudienceLevel[]> {
+  return request(`/api/audience-level/${userId}`, { method: 'GET' });
+}
+
+// Enviar un regalo
+export async function sendGift(receiverId: string, name: string, emoji: string, coins: number, senderId?: string, message?: string, streamSessionId?: string): Promise<Gift> {
+  return request(`/api/gift`, {
+    method: 'POST',
+    body: JSON.stringify({ receiverId, name, emoji, coins, senderId, message, streamSessionId }),
+  });
+}
+
+// Obtener regalos recibidos por un streamer
+export async function getReceivedGifts(receiverId: string): Promise<Gift[]> {
+  return request(`/api/gift/received/${receiverId}`, { method: 'GET' });
+}
+
+// Crear comentario
+export async function createComment(userId: string, content: string): Promise<Comment> {
+  return request(`/api/comment`, {
+    method: 'POST',
+    body: JSON.stringify({ userId, content }),
+  });
+}
+
+// Obtener comentarios
+export async function getComments(limit: number = 50): Promise<Comment[]> {
+  return request(`/api/comment?limit=${limit}`, { method: 'GET' });
+}
 
 export const storage = {
   getToken(): string | null { return localStorage.getItem('toktok_token'); },

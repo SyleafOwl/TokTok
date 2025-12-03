@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import './Settings.css';
 import { getUserProfile, UserProfile } from '../Perfil/userStore';
-
+import ConfigNiveles from './ConfigNiveles';
 
 interface SettingsProps {
   onBack: () => void;
@@ -11,7 +11,14 @@ interface SettingsProps {
 
 const Settings: React.FC<SettingsProps> = ({ onBack, onLogout }) => {
   const [profile, setProfile] = useState<UserProfile | null>(null)
+  const [subPage, setSubPage] = useState<'main' | 'niveles'>('main');
+
   useEffect(() => { setProfile(getUserProfile()) }, [])
+
+  if (subPage === 'niveles') {
+      return <ConfigNiveles onBack={() => setSubPage('main')} usuario={profile?.username || ''} />;
+  }
+
   return (
     <div className="settings-container">
       <header className="settings-header">
@@ -27,6 +34,17 @@ const Settings: React.FC<SettingsProps> = ({ onBack, onLogout }) => {
           <div className="settings-item"><span>Correo/Teléfono</span><span>{profile?.contact || '—'}</span></div>
           <div className="settings-item"><span>Tipo de usuario</span><span>{profile?.role === 'streamer' ? 'Streamer' : profile?.role === 'viewer' ? 'Viewer' : '—'}</span></div>
         </div>
+
+        {}
+        {profile?.role === 'streamer' && (
+            <div className="settings-section">
+                <h2>Comunidad y Gamificación</h2>
+                <div className="settings-item" onClick={() => setSubPage('niveles')} style={{ cursor: 'pointer' }}>
+                    <span>Configurar Puntos por Nivel</span>
+                    <span>&gt;</span>
+                </div>
+            </div>
+        )}
     
         <div className="settings-section">
           <h2>Apariencia</h2>

@@ -1,3 +1,5 @@
+import * as api from '../api'
+
 export type LiveSession = {
   id: string
   user: string
@@ -27,6 +29,24 @@ function saveDB(db: DB) {
   try { localStorage.setItem(KEY, JSON.stringify(db)) } catch {}
 }
 
+// Sincronizar desde backend si está disponible
+export async function syncMetricsFromBackend(userId: string): Promise<UserMetrics | null> {
+  try {
+    const metrics = await api.getStreamerMetrics(userId)
+    const db = loadDB()
+    db[userId] = {
+      user: userId,
+      totalMs: metrics.totalMs,
+      sessions: [], // Backend no devuelve sesiones individuales en getStreamerMetrics
+    }
+    saveDB(db)
+    return db[userId]
+  } catch (e) {
+    console.warn('[metricasStore] Error sincronizando desde backend:', e)
+    return null
+  }
+}
+
 export function getUserMetrics(user: string): UserMetrics {
   const db = loadDB()
   if (!db[user]) db[user] = { user, totalMs: 0, sessions: [] }
@@ -48,22 +68,41 @@ export function startSession(user: string): UserMetrics {
   m.sessions.push(sess)
   m.activeSessionId = id
   saveDB(db)
+  
+  // Enviar al backend si está disponible
+  api.startStreamSession(user).catch(e => console.warn('[startStreamSession] Error:', e))
+  
   return m
 }
 
-export function stopSession(user: string): UserMetrics {
+export async function stopSession(user: string): Promise<UserMetrics> {
   const db = loadDB()
   const m = db[user] || { user, totalMs: 0, sessions: [] }
   if (!m.activeSessionId) return m
+  
   const idx = m.sessions.findIndex(s => s.id === m.activeSessionId)
+  let durationMs = 0
+  
   if (idx >= 0 && !m.sessions[idx].end) {
     m.sessions[idx].end = Date.now()
-    const dur = Math.max(0, (m.sessions[idx].end! - m.sessions[idx].start))
-    m.totalMs += dur
+    durationMs = Math.max(0, (m.sessions[idx].end! - m.sessions[idx].start))
+    m.totalMs += durationMs
   }
+  
   m.activeSessionId = undefined
   db[user] = m
   saveDB(db)
+  
+  // Enviar al backend si está disponible
+  try {
+    const updated = await api.endStreamSession(user, durationMs)
+    // Actualizar desde backend para sincronizar nivel
+    db[user].totalMs = updated.totalMs
+    saveDB(db)
+  } catch (e) {
+    console.warn('[stopSession] Error enviando al backend:', e)
+  }
+  
   return m
 }
 
