@@ -210,6 +210,18 @@ export async function getComments(limit: number = 50): Promise<Comment[]> {
   return request(`/api/comment?limit=${limit}`, { method: 'GET' });
 }
 
+export async function getUserFullProfile(username: string): Promise<any> {
+  return request(`/api/user/${username}`, { method: 'GET' });
+}
+
+// 2. Guardar la sesión al terminar el LIVE (para que la barra avance)
+export async function endStreamerSessionByUsername(username: string, durationMs: number): Promise<any> {
+  return request('/api/streamer/session/end', {
+    method: 'POST',
+    body: JSON.stringify({ username, durationMs })
+  });
+}
+
 export const storage = {
   getToken(): string | null { return localStorage.getItem('toktok_token'); },
   setToken(token: string) { localStorage.setItem('toktok_token', token); },
