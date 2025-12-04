@@ -37,6 +37,28 @@ async function request(path: string, options: RequestInit = {}) {
   return data;
 }
 
+// Helper de reintentos con backoff exponencial, tolera fallos de red/RTMP
+async function requestWithRetry(path: string, options: RequestInit = {}, retries = 3): Promise<any> {
+  let attempt = 0;
+  let lastErr: any;
+  while (attempt <= retries) {
+    try {
+      return await request(path, options);
+    } catch (err: any) {
+      lastErr = err;
+      const msg = String(err?.message || 'error');
+      // No reintentar para errores 4xx (lógicos)
+      const isClientErr = /\b(4\d\d|Bad Request|Unauthorized|Forbidden|Not Found)\b/i.test(msg);
+      if (isClientErr) break;
+      const delay = Math.min(1000 * Math.pow(2, attempt), 8000);
+      try { console.warn('[TokTok API] retry', { path, attempt, delay, msg }); } catch {}
+      await new Promise(r => setTimeout(r, delay));
+      attempt++;
+    }
+  }
+  throw lastErr;
+}
+
 function safePreview(bodyStr: string) {
   try {
     const obj = JSON.parse(bodyStr);
@@ -144,7 +166,7 @@ export async function getStreamerMetrics(userId: string): Promise<StreamerMetric
 
 // Finalizar sesión de transmisión: actualiza totalMs, totalSessions y detecta level-up
 export async function endStreamSession(userId: string, durationMs: number): Promise<StreamerMetrics> {
-  return request(`/api/metrics/${userId}/session-end`, {
+  return requestWithRetry(`/api/metrics/${userId}/session-end`, {
     method: 'POST',
     body: JSON.stringify({ durationMs }),
   });
@@ -160,7 +182,7 @@ export async function recalculateMetrics(userId: string): Promise<StreamerMetric
 
 // Crear una nueva sesión de transmisión
 export async function startStreamSession(userId: string): Promise<StreamSession> {
-  return request(`/api/stream-session`, {
+  return requestWithRetry(`/api/stream-session`, {
     method: 'POST',
     body: JSON.stringify({ userId, startTime: new Date().toISOString() }),
   });
@@ -216,4 +238,71 @@ export const storage = {
   clear() { localStorage.removeItem('toktok_token'); localStorage.removeItem('toktok_persona'); },
   getPersona(): Persona | null { const v = localStorage.getItem('toktok_persona'); return v ? JSON.parse(v) : null; },
   setPersona(p: Persona) { localStorage.setItem('toktok_persona', JSON.stringify(p)); },
+};
+
+// ---- Rastreador tolerante a fallos para sesiones de streaming ----
+export interface StreamTrackingState {
+  userId: string;
+  sessionId: string;
+  startTimeIso: string;
+}
+
+const TRACK_KEY = 'toktok_stream_tracking';
+const PENDING_SYNC_KEY = 'toktok_pending_session_sync';
+
+export const streamTracker = {
+  async start(userId: string): Promise<StreamTrackingState> {
+    const session = await startStreamSession(userId);
+    const state: StreamTrackingState = {
+      userId,
+      sessionId: session.id,
+      startTimeIso: session.startTime || new Date().toISOString(),
+    };
+    localStorage.setItem(TRACK_KEY, JSON.stringify(state));
+    try { console.info('[StreamTracker] start', state); } catch {}
+    return state;
+  },
+
+  current(): StreamTrackingState | null {
+    const v = localStorage.getItem(TRACK_KEY);
+    return v ? JSON.parse(v) as StreamTrackingState : null;
+  },
+
+  async end(): Promise<StreamerMetrics | null> {
+    const st = streamTracker.current();
+    if (!st) return null;
+    const start = new Date(st.startTimeIso).getTime();
+    const now = Date.now();
+    const durationMs = Math.max(0, now - start);
+    try {
+      const metrics = await endStreamSession(st.userId, durationMs);
+      localStorage.removeItem(TRACK_KEY);
+      try { console.info('[StreamTracker] end ok', { durationMs, metrics }); } catch {}
+      return metrics;
+    } catch (err) {
+      // Encolar sincronización pendiente para reintentar luego
+      const pending = { userId: st.userId, durationMs, when: new Date().toISOString() };
+      localStorage.setItem(PENDING_SYNC_KEY, JSON.stringify(pending));
+      localStorage.removeItem(TRACK_KEY);
+      try { console.warn('[StreamTracker] end failed, queued for retry', pending); } catch {}
+      return null;
+    }
+  },
+
+  // Reintenta enviar cualquier cierre de sesión pendiente (p. ej. tras reconexión)
+  async flushPending(): Promise<StreamerMetrics | null> {
+    const v = localStorage.getItem(PENDING_SYNC_KEY);
+    if (!v) return null;
+    const pending = JSON.parse(v) as { userId: string; durationMs: number; when: string };
+    try {
+      const metrics = await endStreamSession(pending.userId, pending.durationMs);
+      localStorage.removeItem(PENDING_SYNC_KEY);
+      try { console.info('[StreamTracker] flush ok', { pending, metrics }); } catch {}
+      return metrics;
+    } catch (err) {
+      // Mantener en cola hasta que funcione
+      try { console.warn('[StreamTracker] flush failed, keep queued'); } catch {}
+      return null;
+    }
+  },
 };
