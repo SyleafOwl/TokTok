@@ -8,22 +8,26 @@ const PET_IMG = 'https://preview.redd.it/z1gd2kwa4a361.jpg?width=1080&crop=smart
 type Props = { usuario?: string }
 
 const Mascota: React.FC<Props> = ({ usuario = '' }) => {
+  const persona = React.useMemo(() => {
+    try { return JSON.parse(localStorage.getItem('toktok_persona') || 'null') } catch { return null }
+  }, [])
+  const backendUserId: string = persona?.id || usuario || 'anon'
   // usar cache local inmediato y luego reemplazar con la versión remota cuando llegue
-  const [pet, setPet] = React.useState<PetState>(() => getPet(usuario || 'anon'))
+  const [pet, setPet] = React.useState<PetState>(() => getPet(backendUserId))
   const [pct, setPct] = React.useState(0)
   const [feeding, setFeeding] = React.useState(false)
   const [showNoPoints, setShowNoPoints] = React.useState(false)
   const [showBoom, setShowBoom] = React.useState(false)
-  const [lastMilestone, setLastMilestone] = React.useState<number>(() => Math.floor((getPet(usuario || 'anon').size) || 1))
+  const [lastMilestone, setLastMilestone] = React.useState<number>(() => Math.floor((getPet(backendUserId).size) || 1))
   const [creating, setCreating] = React.useState(false)
   const stageRef = React.useRef<HTMLDivElement>(null)
 
   React.useEffect(() => {
-    if (!usuario) return
+    if (!backendUserId) return
     const ctrl = new AbortController()
     ;(async () => {
       try {
-        const remote = await getPetRemote(usuario, ctrl.signal)
+        const remote = await getPetRemote(backendUserId, ctrl.signal)
         setPet(remote)
       } catch (err) {
         if ((err as any)?.name === 'AbortError') return
@@ -32,18 +36,18 @@ const Mascota: React.FC<Props> = ({ usuario = '' }) => {
       }
     })()
     return () => { ctrl.abort() }
-  }, [usuario])
+  }, [backendUserId])
 
   React.useEffect(() => {
-    if (!usuario) { setPct(0); return }
+    if (!backendUserId) { setPct(0); return }
     const id = setInterval(() => {
-      const xp = getUserXP(usuario)
+      const xp = getUserXP(backendUserId)
       const perLevel = 100
       const within = xp.points % perLevel
       setPct(Math.max(0, Math.min(100, Math.floor((within / perLevel) * 100))))
     }, 600)
     return () => clearInterval(id)
-  }, [usuario])
+  }, [backendUserId])
 
   const spawnHearts = (n = 6) => {
     const el = stageRef.current
@@ -87,9 +91,9 @@ const Mascota: React.FC<Props> = ({ usuario = '' }) => {
   }
 
   const onFeed = (amount: number) => {
-    if (!usuario) return
+    if (!backendUserId) return
     const prevSize = pet.size
-    const res = feedPet(usuario, amount)
+    const res = feedPet(backendUserId, amount)
     if (!res.ok) { setShowNoPoints(true); return }
     setPet(res.pet)
     setFeeding(true)
@@ -105,11 +109,11 @@ const Mascota: React.FC<Props> = ({ usuario = '' }) => {
   }
 
   const onCreatePet = async () => {
-    if (!usuario) return
+    if (!backendUserId) return
     setCreating(true)
     try {
       // enviamos hearts = 1 porque el endpoint requiere valores truthy
-      const created = await createPetRemote(usuario, 1, 1)
+      const created = await createPetRemote(backendUserId, 1, 1)
       setPet(created)
     } catch (err) {
       console.warn('crear mascota falló', err)
@@ -119,7 +123,7 @@ const Mascota: React.FC<Props> = ({ usuario = '' }) => {
     }
   }
 
-  const xp = usuario ? getUserXP(usuario) : { points: 0, level: 1, pct: 0, user: '', currBase: 0, nextBase: 100 }
+  const xp = backendUserId ? getUserXP(backendUserId) : { points: 0, level: 1, pct: 0, user: '', currBase: 0, nextBase: 100 }
   const scale = 0.8 + Math.min(1.2, pet.size) * 0.1
 
   return (
@@ -127,7 +131,7 @@ const Mascota: React.FC<Props> = ({ usuario = '' }) => {
       <div className="mascota-card">
         <div className="mascota-header">
           <div className="mascota-title">Tu Mascota</div>
-          <div className="mascota-meta">@{usuario || 'invitado'} · Nivel {xp.level} · Puntos {xp.points}</div>
+          <div className="mascota-meta">@{persona?.nombre || usuario || 'invitado'} · Nivel {xp.level} · Puntos {xp.points}</div>
         </div>
         <div ref={stageRef} className="mascota-stage">
           {showBoom && (
@@ -149,8 +153,8 @@ const Mascota: React.FC<Props> = ({ usuario = '' }) => {
           <button
             className="mascota-btn"
             onClick={onCreatePet}
-            disabled={!usuario || creating}
-            title={usuario ? 'Crear registro de mascota en servidor' : 'Necesitas un usuario'}
+            disabled={!backendUserId || creating}
+            title={backendUserId ? 'Crear registro de mascota en servidor' : 'Necesitas un usuario'}
           >
             {creating ? 'Creando...' : 'Crear mascota'}
           </button>
