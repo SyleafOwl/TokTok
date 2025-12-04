@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import './Metricas.css'
-import { getStreamerMetrics, getStreamSessions, storage } from '../api'
+import { getStreamerMetrics, getStreamSessions, storage, streamTracker } from '../api'
 import StreamerProgress from './StreamerProgress'
 import { 
   getUserMetrics, 
@@ -10,7 +10,6 @@ import {
   formatDuration, 
   UserMetrics 
 } from './metricasStore'
-import { streamTracker, storage } from '../api'
 
 type Rol = 'viewer' | 'streamer'
 type Props = { usuario?: string; rol?: Rol }
@@ -18,7 +17,6 @@ type Props = { usuario?: string; rol?: Rol }
 const MetricasPage: React.FC<Props> = ({ usuario = '', rol = 'viewer' }) => {
   const [mine, setMine] = useState<UserMetrics | null>(null)
   const [others, setOthers] = useState<UserMetrics[]>([])
-  const persona = storage.getPersona()
   const persona = storage.getPersona()
   const userId = persona?.id || ''
   const [backendTotalMs, setBackendTotalMs] = useState<number>(0)
@@ -168,7 +166,7 @@ const MetricasPage: React.FC<Props> = ({ usuario = '', rol = 'viewer' }) => {
       {canUse && (
         <div className="metricas-grid">
           <section className="metricas-card">
-            <h4>Tus métricas (Req. 29)</h4>
+            <h4>Tus métricas</h4>
             <div className="metricas-list">
               
               <div className="metricas-row">

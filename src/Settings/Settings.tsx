@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import './Settings.css';
 import { getUserProfile, UserProfile } from '../Perfil/userStore';
 import ConfigNiveles from './ConfigNiveles';
+import LevelUpModal from '../Metricas/LevelUpModal';
 
 interface SettingsProps {
   onBack: () => void;
@@ -12,6 +13,7 @@ interface SettingsProps {
 const Settings: React.FC<SettingsProps> = ({ onBack, onLogout }) => {
   const [profile, setProfile] = useState<UserProfile | null>(null)
   const [subPage, setSubPage] = useState<'main' | 'niveles'>('main');
+  const [showLevelUp, setShowLevelUp] = useState<number | null>(null)
 
   useEffect(() => { setProfile(getUserProfile()) }, [])
 
@@ -43,6 +45,10 @@ const Settings: React.FC<SettingsProps> = ({ onBack, onLogout }) => {
                     <span>Configurar Puntos por Nivel</span>
                     <span>&gt;</span>
                 </div>
+            <div className="settings-item" onClick={() => setShowLevelUp((profile as any)?.level ?? 1)} style={{ cursor: 'pointer' }}>
+              <span>Probar Level Up</span>
+              <span>&gt;</span>
+            </div>
             </div>
         )}
     
@@ -77,6 +83,9 @@ const Settings: React.FC<SettingsProps> = ({ onBack, onLogout }) => {
             </button>
         </div>
       </div>
+      {showLevelUp && (
+        <LevelUpModal level={showLevelUp} onClose={() => setShowLevelUp(null)} />
+      )}
     </div>
   );
 };
