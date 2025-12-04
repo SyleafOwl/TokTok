@@ -159,6 +159,20 @@ export interface Comment {
   updatedAt: string;
 }
 
+// ---- Mascotas & Intis ----
+export interface PetStateDto {
+  userId: string;
+  size: number;
+  hearts: number;
+  lastFed?: string;
+}
+
+export interface IntisBalance {
+  userId: string;
+  balance: number;
+  updatedAt: string;
+}
+
 // Obtener métricas del streamer
 export async function getStreamerMetrics(userId: string): Promise<StreamerMetrics> {
   return request(`/api/metrics/${userId}`, { method: 'GET' });
@@ -239,6 +253,32 @@ export const storage = {
   getPersona(): Persona | null { const v = localStorage.getItem('toktok_persona'); return v ? JSON.parse(v) : null; },
   setPersona(p: Persona) { localStorage.setItem('toktok_persona', JSON.stringify(p)); },
 };
+
+// Crear mascota en backend
+export async function createPet(userId: string, size = 1, hearts = 1): Promise<PetStateDto> {
+  return requestWithRetry(`/api/pets`, {
+    method: 'POST',
+    body: JSON.stringify({ userId, size, hearts }),
+  });
+}
+
+// Obtener mascota por userId
+export async function fetchPet(userId: string): Promise<PetStateDto> {
+  return requestWithRetry(`/api/pets/${encodeURIComponent(userId)}`, { method: 'GET' });
+}
+
+// Obtener balance de Intis
+export async function getIntisBalance(userId: string): Promise<IntisBalance> {
+  return requestWithRetry(`/api/intis/${encodeURIComponent(userId)}`, { method: 'GET' });
+}
+
+// Ajustar balance de Intis (positivo suma, negativo resta)
+export async function adjustIntis(userId: string, amount: number): Promise<IntisBalance> {
+  return requestWithRetry(`/api/intis/${encodeURIComponent(userId)}/adjust`, {
+    method: 'POST',
+    body: JSON.stringify({ amount }),
+  });
+}
 
 // ---- Rastreador tolerante a fallos para sesiones de streaming ----
 export interface StreamTrackingState {

@@ -1,4 +1,5 @@
 import { addPoints, getUserXP } from '../Perfil/xpStore'
+import { createPet, fetchPet } from '../api'
 
 export type PetState = {
   user: string
@@ -30,22 +31,13 @@ export function getPet(user: string): PetState {
  */
 export async function createPetRemote(user: string, size = 1, hearts = 1, signal?: AbortSignal): Promise<PetState> {
   if (!user) throw new Error('no-user')
-  const res = await fetch('/api/pets', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ size, hearts, userId: user }),
-    signal
-  })
-  if (!res.ok) {
-    const body = await res.json().catch(() => ({}))
-    throw new Error(body?.error ?? 'Error creando mascota en servidor')
-  }
-  const data = await res.json()
+  // Nota: las funciones de api.ts no aceptan AbortSignal directamente; si se requiere, se puede extender.
+  const data = await createPet(user, size, hearts)
   const pet: PetState = {
     user,
     size: typeof data.size === 'number' ? data.size : size,
     hearts: typeof data.hearts === 'number' ? data.hearts : hearts,
-    lastFed: data.lastFed ?? undefined
+    lastFed: data.lastFed ? Date.parse(data.lastFed) : undefined
   }
   const db = loadDB(); db[user] = pet; saveDB(db)
   return pet
@@ -54,18 +46,11 @@ export async function createPetRemote(user: string, size = 1, hearts = 1, signal
 export async function getPetRemote(user: string, signal?: AbortSignal): Promise<PetState> {
   if (!user) return getPet(user)
   try {
-    const url = `/api/pets/${encodeURIComponent(user)}`
-    const res = await fetch(url, { signal })
-    if (res.status === 404) {
-      const created = await createPetRemote(user, 1, 1, signal)
-      return created
-    }
-    if (!res.ok) throw new Error('Error al obtener mascota')
-    const data = await res.json()
-    const petSize = (typeof data.size === 'number') ? data.size : (data.pet?.size ?? 1)
-    const petHearts = (typeof data.hearts === 'number') ? data.hearts : (data.pet?.hearts ?? 0)
-    const lastFed = data.lastFed ?? data.pet?.lastFed
-    const pet: PetState = { user, size: petSize, hearts: petHearts, lastFed }
+    const data = await fetchPet(user)
+    const petSize = (typeof data.size === 'number') ? data.size : 1
+    const petHearts = (typeof data.hearts === 'number') ? data.hearts : 0
+    const lastFedMs = data.lastFed ? Date.parse(data.lastFed) : undefined
+    const pet: PetState = { user, size: petSize, hearts: petHearts, lastFed: lastFedMs }
     const db = loadDB(); db[user] = pet; saveDB(db)
     return pet
   } catch (e) {

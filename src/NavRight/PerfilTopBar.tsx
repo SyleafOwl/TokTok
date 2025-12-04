@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { storage, getStreamerMetrics } from '../api'
+import { storage, getStreamerMetrics, getIntisBalance, adjustIntis } from '../api'
 import GeneratingTokensIcon from '@mui/icons-material/GeneratingTokens'
 import PhoneAndroidIcon from '@mui/icons-material/PhoneAndroid'
 import AccountCircleIcon from '@mui/icons-material/AccountCircle'
@@ -25,8 +25,18 @@ const PerfilTopBar: React.FC<PerfilTopBarProps> = ({ intis, setIntis, onNavigate
   const [xpLevel, setXpLevel] = useState<number>(1)
   const [roleLabel, setRoleLabel] = useState<string>('')
 
-  const manejarCompra = (monto: number) => {
+  const manejarCompra = async (monto: number) => {
     setIntis((prev) => prev + monto)
+    try {
+      const p = storage.getPersona()
+      if (p?.id) {
+        await adjustIntis(p.id, Math.max(0, monto))
+        const bal = await getIntisBalance(p.id)
+        setIntis(bal.balance)
+      }
+    } catch (err) {
+      console.warn('Ajuste de Intis falló, manteniendo estado local', err)
+    }
   }
 
   // Cerrar menú con click fuera
@@ -86,6 +96,20 @@ const PerfilTopBar: React.FC<PerfilTopBarProps> = ({ intis, setIntis, onNavigate
 
   const persona = storage.getPersona()
   const isAuth = !!storage.getToken()
+
+  // Sincronizar saldo de Intis desde backend al abrir TopBar o autenticación
+  useEffect(() => {
+    const p = storage.getPersona()
+    if (!p?.id) return
+    let alive = true
+    ;(async () => {
+      try {
+        const bal = await getIntisBalance(p.id)
+        if (alive) setIntis(bal.balance)
+      } catch {}
+    })()
+    return () => { alive = false }
+  }, [isAuth])
 
   return (
     <div className="perfil-topbar-container" role="banner">
