@@ -146,7 +146,7 @@ const Mascota: React.FC<Props> = ({ usuario = '' }) => {
           <div className="mascota-bar" aria-label="Progreso XP"><span style={{ ['--pct' as any]: `${pct}%` }} /></div>
         </div>
         <div className="mascota-actions" role="group" aria-label="Alimentar mascota">
-          <button className="mascota-btn" onClick={() => onFeed(10)}>Dar 10 pts</button>
+          <button className="mascota-btn" onClick={() => onFeed(0)}>Dar 10 pts</button>
           <button className="mascota-btn" onClick={() => onFeed(50)}>Dar 50 pts</button>
           <button className="mascota-btn" onClick={() => onFeed(100)}>Dar 100 pts</button>
           <button className="mascota-btn primary" onClick={() => onFeed(250)}>Banquete 250</button>
