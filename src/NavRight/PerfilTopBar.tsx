@@ -186,7 +186,18 @@ const PerfilTopBar: React.FC<PerfilTopBarProps> = ({ intis, setIntis, onNavigate
             Tus Regalos
           </button>
           <div className="perfil-menu__separator"/>
-          <button className="perfil-menu__item perfil-menu__danger" role="menuitem" onClick={() => { setMenuAbierto(false); storage.clear(); onLogout && onLogout(); setTimeout(() => window.location.reload(), 100) }}>Cerrar sesión</button>
+          <button
+            className="perfil-menu__item perfil-menu__danger"
+            role="menuitem"
+            onClick={() => {
+              setMenuAbierto(false)
+              // Reset visual del saldo al cerrar sesión
+              setIntis(0)
+              storage.clear()
+              onLogout && onLogout()
+              setTimeout(() => window.location.reload(), 100)
+            }}
+          >Cerrar sesión</button>
         </div>
       )}
 

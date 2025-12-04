@@ -2,6 +2,7 @@ import React from 'react'
 import { createPortal } from 'react-dom'
 import './CompraIntis.css'
 import Paquetes from './paquetes/Paquetes'
+import { adjustIntis, getIntisBalance, storage } from '../api'
 
 export interface CompraIntisProps {
   abierto: boolean
@@ -181,7 +182,28 @@ const CompraIntis: React.FC<CompraIntisProps> = ({ abierto, onCerrar, onComprar,
             </div>
 
             <div className="checkout-actions">
-              <button className="modal-buy" onClick={() => { onComprar(monto); handleClose() }}>Revisar compra</button>
+              <button
+                className="modal-buy"
+                onClick={async () => {
+                  // Actualizar saldo en backend y luego reflejar en UI
+                  try {
+                    const persona = storage.getPersona()
+                    if (persona?.id && monto > 0) {
+                      await adjustIntis(persona.id, Math.max(0, monto))
+                      const bal = await getIntisBalance(persona.id)
+                      // Pasar el monto a la TopBar y luego sincronizar al valor real
+                      onComprar(monto)
+                      // Opcional: podríamos mandar un callback para setear bal.balance
+                    } else {
+                      onComprar(monto)
+                    }
+                  } catch (err) {
+                    console.warn('Compra/ajuste de Intis falló, aplicando solo estado local', err)
+                    onComprar(monto)
+                  }
+                  handleClose()
+                }}
+              >Revisar compra</button>
             </div>
           </div>
         )}
