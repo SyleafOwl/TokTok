@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import './Metricas.css'
+import { getStreamerMetrics, getStreamSessions, storage } from '../api'
+import StreamerProgress from './StreamerProgress'
 import { 
   getUserMetrics, 
   getAllMetrics, 
@@ -8,6 +10,7 @@ import {
   formatDuration, 
   UserMetrics 
 } from './metricasStore'
+import { streamTracker, storage } from '../api'
 
 type Rol = 'viewer' | 'streamer'
 type Props = { usuario?: string; rol?: Rol }
@@ -15,6 +18,11 @@ type Props = { usuario?: string; rol?: Rol }
 const MetricasPage: React.FC<Props> = ({ usuario = '', rol = 'viewer' }) => {
   const [mine, setMine] = useState<UserMetrics | null>(null)
   const [others, setOthers] = useState<UserMetrics[]>([])
+  const persona = storage.getPersona()
+  const persona = storage.getPersona()
+  const userId = persona?.id || ''
+  const [backendTotalMs, setBackendTotalMs] = useState<number>(0)
+  const [backendSessions, setBackendSessions] = useState<number>(0)
   
   const [tiempoVisual, setTiempoVisual] = useState(0)
   const [busy, setBusy] = useState(false)
@@ -31,6 +39,19 @@ const MetricasPage: React.FC<Props> = ({ usuario = '', rol = 'viewer' }) => {
       }
     }
     setOthers(getAllMetrics().filter(m => m.user !== usuario))
+    // Backend metrics for real streamer progress
+    if (userId) {
+      ;(async () => {
+        try {
+          const m = await getStreamerMetrics(userId)
+          setBackendTotalMs(m.totalMs || 0)
+        } catch {}
+        try {
+          const sessions = await getStreamSessions(userId)
+          setBackendSessions(Array.isArray(sessions) ? sessions.length : 0)
+        } catch {}
+      })()
+    }
   }
 
   useEffect(() => { refresh() }, [usuario])
@@ -85,6 +106,7 @@ const MetricasPage: React.FC<Props> = ({ usuario = '', rol = 'viewer' }) => {
     setBusy(true)
     try {
       await startSession(usuario!)
+      if (persona?.id) { await streamTracker.start(persona.id) }
       refresh()
     } catch (err) {
       console.error('startSession failed', err)
@@ -98,6 +120,7 @@ const MetricasPage: React.FC<Props> = ({ usuario = '', rol = 'viewer' }) => {
     setBusy(true)
     try {
       await stopSession(usuario!)
+      await streamTracker.end()
       refresh()
     } catch (err) {
       console.error('stopSession failed', err)
@@ -109,7 +132,7 @@ const MetricasPage: React.FC<Props> = ({ usuario = '', rol = 'viewer' }) => {
   return (
     <div className="metricas-page">
       <div className="metricas-header">
-        <div className="metricas-title">Métricas de LIVE</div>
+        <div className="metricas-title">Métricas de LIVE {persona?.nombre ? `· @${persona.nombre}` : ''}</div>
         
         {canUse && (
           <div className="metricas-actions">
@@ -164,7 +187,7 @@ const MetricasPage: React.FC<Props> = ({ usuario = '', rol = 'viewer' }) => {
 
               <div className="metricas-row">
                 <span>Sesiones</span>
-                <span className="metricas-sub">{mine?.sessions.length ?? 0}</span>
+                <span className="metricas-sub">{backendSessions || (mine?.sessions.length ?? 0)}</span>
               </div>
               
               {mine?.sessions.slice().reverse().slice(0, 8).map(s => (
@@ -176,6 +199,10 @@ const MetricasPage: React.FC<Props> = ({ usuario = '', rol = 'viewer' }) => {
                 </div>
               ))}
             </div>
+          </section>
+
+          <section className="metricas-card">
+            <StreamerProgress totalMs={backendTotalMs || tiempoVisual} />
           </section>
 
           <section className="metricas-card">
