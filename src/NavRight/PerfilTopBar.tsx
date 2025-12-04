@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { storage } from '../api'
+import { storage, getStreamerMetrics } from '../api'
 import GeneratingTokensIcon from '@mui/icons-material/GeneratingTokens'
 import PhoneAndroidIcon from '@mui/icons-material/PhoneAndroid'
 import AccountCircleIcon from '@mui/icons-material/AccountCircle'
@@ -23,6 +23,7 @@ const PerfilTopBar: React.FC<PerfilTopBarProps> = ({ intis, setIntis, onNavigate
   const [mostrarAvisoViewer, setMostrarAvisoViewer] = useState(false)
   const [xpPct, setXpPct] = useState<number>(0)
   const [xpLevel, setXpLevel] = useState<number>(1)
+  const [roleLabel, setRoleLabel] = useState<string>('')
 
   const manejarCompra = (monto: number) => {
     setIntis((prev) => prev + monto)
@@ -48,16 +49,38 @@ const PerfilTopBar: React.FC<PerfilTopBarProps> = ({ intis, setIntis, onNavigate
     return () => window.removeEventListener('keydown', onKey)
   }, [menuAbierto])
 
-  // mientras el menú está abierto, refrescar XP del viewer cada ~1s
+  // mientras el menú está abierto, refrescar nivel/XP según rol cada ~1s
   useEffect(() => {
-    if (!menuAbierto || rol !== 'viewer' || !usuario) return
-    const sync = () => {
+    if (!menuAbierto) return
+    // establecer etiqueta de rol
+    setRoleLabel(rol === 'streamer' ? 'Streamer' : 'Viewer')
+    const syncViewer = () => {
+      if (!usuario) return
       const xp = getUserXP(usuario!)
       setXpPct(xp.pct)
       setXpLevel(xp.level)
     }
-    sync()
-    const id = setInterval(sync, 1000)
+    const syncStreamer = async () => {
+      const p = storage.getPersona()
+      if (!p) return
+      try {
+        const m = await getStreamerMetrics(p.id)
+        // Convertir totalMs a porcentajes según reglas del backend (aprox: 1 nivel = 60 min)
+        const level = m.currentLevel
+        setXpLevel(level)
+        // Si el backend no devuelve porcentaje dentro del nivel, estimar sobre 60 min por nivel
+        const minutesInLevel = 60
+        const msIntoLevel = Math.max(0, m.totalMs - (level - 1) * minutesInLevel * 60_000)
+        const pct = Math.max(0, Math.min(100, (msIntoLevel / (minutesInLevel * 60_000)) * 100))
+        setXpPct(pct)
+      } catch {}
+    }
+    const run = () => {
+      if (rol === 'viewer') syncViewer()
+      else syncStreamer()
+    }
+    run()
+    const id = setInterval(run, 1000)
     return () => clearInterval(id)
   }, [menuAbierto, rol, usuario])
 
@@ -100,15 +123,16 @@ const PerfilTopBar: React.FC<PerfilTopBarProps> = ({ intis, setIntis, onNavigate
 
       {menuAbierto && (
         <div ref={menuRef} className="perfil-menu" role="menu" aria-label="Menú de perfil">
-          {/* Encabezado con nombre de usuario y progreso (solo viewer) */}
+          {/* Encabezado con nombre de usuario y progreso (viewer/streamer) */}
           <div className="perfil-menu__header">
-            <div className="perfil-menu__user">{persona ? `@${persona.nombre}` : (usuario ? `@${usuario}` : 'Invitado')}</div>
-            {rol === 'viewer' && (
-              <div className="perfil-menu__xp">
-                <div className="perfil-menu__xpbar"><span style={{ width: `${xpPct}%` }}/></div>
-                <div className="perfil-menu__xplevel">Nivel {xpLevel}</div>
-              </div>
-            )}
+            <div className="perfil-menu__user">
+              {(persona?.nombre || usuario) ? `@${persona?.nombre || usuario}` : 'Invitado'}
+              {roleLabel && <span className="perfil-menu__role"> · {roleLabel}</span>}
+            </div>
+            <div className="perfil-menu__xp">
+              <div className="perfil-menu__xpbar"><span style={{ width: `${xpPct}%` }}/></div>
+              <div className="perfil-menu__xplevel">Nivel {xpLevel}</div>
+            </div>
           </div>
           <button className="perfil-menu__item" role="menuitem" onClick={() => { setMenuAbierto(false); onNavigate && onNavigate('perfil') }}>Tu Perfil</button>
           <button
